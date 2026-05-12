@@ -494,6 +494,8 @@ function App() {
 
     return `${String(activeStop.panelIndex + 1).padStart(2, "0")} / ${String(activePanelCount).padStart(2, "0")}`;
   }, [activePanelCount, activeStop.panelIndex]);
+  const mobileStopProgress =
+    scrollStops.length <= 1 ? 0 : motion.activeStop / (scrollStops.length - 1);
 
   return (
     <main
@@ -781,6 +783,201 @@ function App() {
             </>
           )}
         </article>
+
+        <section
+          className="mobile-deck-shell"
+          aria-label="Mobile skateboard deck portfolio"
+          style={
+            {
+              "--mobile-stop-index": motion.activeStop,
+              "--mobile-stop-count": scrollStops.length,
+              "--mobile-progress": mobileStopProgress,
+            } as React.CSSProperties
+          }
+        >
+          <div className="mobile-rail">
+            <div className="mobile-section-bolts">
+              {sections.map((section) => {
+                const Icon = section.icon;
+                const stopIndex = sectionStartStops[section.id];
+                const boltProgress = scrollStops.length <= 1 ? 0 : stopIndex / (scrollStops.length - 1);
+
+                return (
+                  <button
+                    className={`mobile-section-bolt ${
+                      section.id === activeSection.id ? "is-active" : ""
+                    }`}
+                    key={section.id}
+                    type="button"
+                    onClick={() => scrollToStop(stopIndex)}
+                    aria-label={section.label}
+                    style={{ "--bolt-progress": boltProgress } as React.CSSProperties}
+                  >
+                    <Icon size={13} aria-hidden="true" />
+                  </button>
+                );
+              })}
+            </div>
+            <div className="mobile-truck">
+              <img src="/backgrounds/skate_truck.png" alt="" />
+            </div>
+          </div>
+
+          <article
+            className={`mobile-deck-card ${
+              activePanel.media ? "has-media" : ""
+            } ${activeSection.id === "cv" ? "is-cv" : ""}`}
+            key={`mobile-${activeSection.id}-${activeStop.panelIndex}`}
+          >
+            <div className="mobile-deck-meta">
+              <span>{activePanel.eyebrow}</span>
+              <span>{sectionProgressText}</span>
+            </div>
+
+            {activeSection.id === "cv" ? (
+              <>
+                <h1>Experience Timeline</h1>
+                <div className="mobile-cv-scroll" tabIndex={0}>
+                  <section className="mobile-cv-section">
+                    <h2>Professional Experience</h2>
+                    <div className="mobile-cv-timeline">
+                      {cvExperience.map((item) => (
+                        <article className="mobile-cv-entry" key={`${item.date}-${item.title}`}>
+                          <time>{item.date}</time>
+                          <h3>{item.title}</h3>
+                          <p>{item.detail}</p>
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section className="mobile-cv-section">
+                    <h2>Education</h2>
+                    <div className="mobile-cv-timeline">
+                      {cvEducation.map((item) => (
+                        <article className="mobile-cv-entry" key={`${item.date}-${item.title}`}>
+                          <time>{item.date}</time>
+                          <h3>{item.title}</h3>
+                          <p>{item.detail}</p>
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section className="mobile-cv-section">
+                    <h2>Skills</h2>
+                    <div className="mobile-chip-grid">
+                      {cvSkills.map((skill) => (
+                        <span key={skill}>{skill}</span>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section className="mobile-cv-section">
+                    <h2>Languages & Hobbies</h2>
+                    <div className="mobile-chip-grid">
+                      {[...cvLanguages, ...cvHobbies].map((item) => (
+                        <span key={item}>{item}</span>
+                      ))}
+                    </div>
+                  </section>
+                </div>
+              </>
+            ) : (
+              <>
+                {activePanel.media ? (
+                  <div className={`mobile-panel-media mobile-panel-media-${activePanel.media.kind}`}>
+                    {activePanel.media.kind === "image" ? (
+                      activePanel.href ? (
+                        <a href={activePanel.href} target="_blank" rel="noreferrer" aria-label={`Open ${activePanel.title}`}>
+                          <img src={activePanel.media.src} alt={activePanel.media.alt} />
+                        </a>
+                      ) : (
+                        <img src={activePanel.media.src} alt={activePanel.media.alt} />
+                      )
+                    ) : (
+                      <video
+                        aria-label={activePanel.media.label}
+                        controls
+                        loop
+                        muted
+                        playsInline
+                        preload="metadata"
+                        src={activePanel.media.src}
+                      />
+                    )}
+                  </div>
+                ) : null}
+
+                <h1>
+                  {activePanel.href ? (
+                    <a href={activePanel.href} target="_blank" rel="noreferrer">
+                      {activePanel.title}
+                    </a>
+                  ) : (
+                    activePanel.title
+                  )}
+                </h1>
+
+                {activePanel.body ? (
+                  <div className="mobile-content-body">
+                    {activePanel.body.split("\n\n").map((paragraph) => (
+                      <p key={paragraph}>{paragraph}</p>
+                    ))}
+                  </div>
+                ) : null}
+
+                {activePanel.stats.length > 0 && activeSection.id !== "contact" ? (
+                  <div className="mobile-chip-grid">
+                    {activePanel.stats.map((stat) => (
+                      <span key={stat}>{stat}</span>
+                    ))}
+                  </div>
+                ) : null}
+
+                <div className="mobile-action-row">
+                  {activePanel.href ? (
+                    <a className="mobile-panel-action" href={activePanel.href} target="_blank" rel="noreferrer">
+                      <ArrowUpRight size={16} aria-hidden="true" />
+                      View project
+                    </a>
+                  ) : null}
+                  {activeSection.id === "contact" ? (
+                    <>
+                      <a className="mobile-panel-action" href={linkedInUrl} target="_blank" rel="noreferrer">
+                        <BriefcaseBusiness size={16} aria-hidden="true" />
+                        LinkedIn
+                      </a>
+                      <a className="mobile-panel-action" href={`mailto:${contactEmail}`}>
+                        <Mail size={16} aria-hidden="true" />
+                        Email
+                      </a>
+                    </>
+                  ) : null}
+                </div>
+              </>
+            )}
+          </article>
+
+          <nav className="mobile-bottom-nav" aria-label="Mobile portfolio sections">
+            {sections.map((section) => {
+              const Icon = section.icon;
+
+              return (
+                <button
+                  className={section.id === activeSection.id ? "is-active" : ""}
+                  key={section.id}
+                  type="button"
+                  onClick={() => scrollToStop(sectionStartStops[section.id])}
+                  aria-label={section.label}
+                >
+                  <Icon size={18} aria-hidden="true" />
+                  <span>{section.nav}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </section>
 
         <div className="scroll-hint" aria-hidden="true">
           <Mouse size={18} />
