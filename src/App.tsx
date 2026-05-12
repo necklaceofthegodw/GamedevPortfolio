@@ -113,6 +113,7 @@ const cvSkills = [
 const cvLanguages = ["English - C1", "German - Basic A2"];
 const cvHobbies = ["Snowboarding", "Skateboarding", "Obstacle course racing", "RC cars, planes, and drones"];
 const linkedInUrl = "https://www.linkedin.com/in/zbigniew-pamula/";
+const contactEmail = "xiens2@gmail.com";
 
 type ScrollStop = {
   sectionId: SectionId;
@@ -445,6 +446,9 @@ function App() {
         const angle = (Math.atan2(tangent.y - point.y, tangent.x - point.x) * 180) / Math.PI;
         const normalAngle = ((angle - 90) * Math.PI) / 180;
         const riderOffset = 45;
+        const endpointLift =
+          Math.max(0, 1 - routeProgress / 0.12) * 34 +
+          Math.max(0, 1 - (1 - routeProgress) / 0.12) * 34;
         const activeStopIndex = clamp(Math.round(next * (scrollStops.length - 1)), 0, scrollStops.length - 1);
         const markers = sections.map((section) => {
           const markerPoint = path.getPointAtLength(clamp(section.routePosition, 0, 1) * pathLength);
@@ -456,7 +460,7 @@ function App() {
           routeProgress,
           rider: {
             x: point.x + Math.cos(normalAngle) * riderOffset,
-            y: point.y + Math.sin(normalAngle) * riderOffset,
+            y: point.y + Math.sin(normalAngle) * riderOffset - endpointLift,
             angle,
           },
           markers,
@@ -637,7 +641,6 @@ function App() {
             <div className="cv-panel">
               <div className="content-meta">
                 <span>CV</span>
-                <span>Scroll</span>
               </div>
               <h1>Experience Timeline</h1>
               <div className="cv-scroll" tabIndex={0}>
@@ -706,7 +709,7 @@ function App() {
                 {activePanel.media ? null : (
                   <div className="content-meta">
                     <span>{activePanel.eyebrow}</span>
-                    <span>{sectionProgressText}</span>
+                    {activeSection.id === "contact" ? null : <span>{sectionProgressText}</span>}
                   </div>
                 )}
                 {activePanel.media ? null : (
@@ -728,11 +731,13 @@ function App() {
                   </div>
                 ) : null}
                 {!activePanel.media && activePanel.stats.length > 0 ? (
-                  <div className="pill-row">
-                    {activePanel.stats.map((stat) => (
-                      <span key={stat}>{stat}</span>
-                    ))}
-                  </div>
+                  activeSection.id === "contact" ? null : (
+                    <div className="pill-row">
+                      {activePanel.stats.map((stat) => (
+                        <span key={stat}>{stat}</span>
+                      ))}
+                    </div>
+                  )
                 ) : null}
                 {!activePanel.media && activePanel.href ? (
                   <a className="panel-action" href={activePanel.href} target="_blank" rel="noreferrer">
@@ -746,9 +751,9 @@ function App() {
                       <BriefcaseBusiness size={16} aria-hidden="true" />
                       LinkedIn
                     </a>
-                    <a className="panel-action" href="mailto:hello@example.com">
+                    <a className="panel-action" href={`mailto:${contactEmail}`}>
                       <Mail size={16} aria-hidden="true" />
-                      hello@example.com
+                      {contactEmail}
                     </a>
                   </>
                 ) : null}
@@ -801,7 +806,7 @@ function App() {
           <a href={linkedInUrl} target="_blank" rel="noreferrer" aria-label="LinkedIn">
             <BriefcaseBusiness size={18} />
           </a>
-          <a href="mailto:hello@example.com" aria-label="Email">
+          <a href={`mailto:${contactEmail}`} aria-label="Email">
             <Mail size={18} />
           </a>
           <a href="#portfolio" onClick={(event) => event.preventDefault()} aria-label="Portfolio action">
