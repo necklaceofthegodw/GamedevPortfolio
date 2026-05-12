@@ -2,16 +2,18 @@ import {
   ArrowUpRight,
   BriefcaseBusiness,
   Code2,
-  Download,
   FileText,
   Gamepad2,
   Mail,
   Mouse,
+  Volume2,
+  VolumeX,
   UserRound,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const backgroundUrl = "/backgrounds/halfpipe-bg-04-skate-neon.png";
+const musicUrl = "/OPM%20Heaven%20Is%20a%20Halfpipe.mp3";
 const pathD =
   "M 180 375 C 178 560, 260 735, 436.5 827 C 590 907, 794 942, 980 940 C 1168 938, 1388 905, 1540.4 822.4 C 1690 741, 1735 555, 1733.5 384.5";
 
@@ -34,6 +36,83 @@ type Section = {
   routePosition: number;
   labelSide: "left" | "right" | "above";
 };
+
+const cvEducation = [
+  {
+    date: "03.2018 - 11.2019",
+    title: "Silesian University of Technology",
+    detail:
+      "Computer Science with specialization in computer graphics. Master thesis: Procedurally generated terrain models using fractal methods.",
+  },
+  {
+    date: "10.2015 - 01.2018",
+    title: "Silesian University of Technology",
+    detail:
+      "Interdisciplinary studies: Automatic Control and Robotics, Electronics and Telecommunication, Computer Science. Thesis: Osteoporosis Risk Calculator - 5-year probability of fracture.",
+  },
+];
+
+const cvExperience = [
+  {
+    date: "11.2024 - now",
+    title: "Warehouse Warrior (UE5)",
+    detail:
+      "My own project created from scratch: a warehouse worker box-pushing puzzle game. Learned how to release a game on Steam, create achievements, and use Steam Cloud for saves.",
+  },
+  {
+    date: "08.2024 - 11.2024",
+    title: "Cosmoscouts - Moon Mystery, UI Programmer (UE5)",
+    detail:
+      "Joined three months before release to fix UI bugs and make the interface match the design in a first-person shooter adventure game.",
+  },
+  {
+    date: "06.2021 - 10.2023",
+    title: "WeirdFish - Oddyssey: Your Space, Your Way, UI Programmer (UE4)",
+    detail:
+      "Implemented UI elements for a single-player and co-op space exploration game focused on resources, crew needs, and saving humanity.",
+  },
+  {
+    date: "02.2021 - 02.2024",
+    title: "Chemical Laboratory VR / 3D Geometry in VR, Trusense - Gameplay Programmer (UE4)",
+    detail:
+      "Built VR education simulations for chemistry and geometry lessons, including experiments and interactive 3D shape categories for schools.",
+  },
+  {
+    date: "11.2020 - 02.2021",
+    title: "AnimalShelter VR, Actum Lab - Gameplay Programmer (UE4)",
+    detail:
+      "Implemented VR pet-care mechanics such as washing the pet, fetching a ball, and snack vending machine interactions.",
+  },
+  {
+    date: "03.2020 - 11.2020",
+    title: "Horror Forest 3, Wenkly Studio - Gameplay Programmer (Unity)",
+    detail:
+      "Created testing tools for game difficulty and progression speed, and fixed gameplay systems including enemy aggro, weapon upgrades, and training.",
+  },
+  {
+    date: "08.2019 - 03.2020",
+    title: "Chernobylite, The Farm 51 - Junior Gameplay Programmer (UE4)",
+    detail:
+      "Fixed bugs, added features to existing systems, worked on dialogue creation tools, and rewrote the main menu with a new design.",
+  },
+];
+
+const cvSkills = [
+  "C#",
+  "C++",
+  "Unity",
+  "Unreal Engine 5",
+  "Git",
+  "SVN",
+  "Perforce",
+  "HTML/CSS/JavaScript",
+  "Java",
+  "Excel / Word / PowerPoint",
+];
+
+const cvLanguages = ["English - C1", "German - Basic A2"];
+const cvHobbies = ["Snowboarding", "Skateboarding", "Obstacle course racing", "RC cars, planes, and drones"];
+const linkedInUrl = "https://www.linkedin.com/in/zbigniew-pamula/";
 
 type ScrollStop = {
   sectionId: SectionId;
@@ -130,8 +209,6 @@ const scrollStops: ScrollStop[] = [
   { sectionId: "features", panelIndex: 1, routePosition: 0.59 },
   { sectionId: "features", panelIndex: 2, routePosition: 0.68 },
   { sectionId: "cv", panelIndex: 0, routePosition: sectionRoutePositions.cv },
-  { sectionId: "cv", panelIndex: 1, routePosition: 0.85 },
-  { sectionId: "cv", panelIndex: 2, routePosition: 0.92 },
   { sectionId: "contact", panelIndex: 0, routePosition: sectionRoutePositions.contact },
 ];
 
@@ -228,21 +305,9 @@ const panelContent: Record<SectionId, Panel[]> = {
   cv: [
     {
       eyebrow: "CV",
-      title: "Core Experience",
-      body: "Gameplay programming, technical design support, feature prototyping, and cross-discipline collaboration.",
-      stats: ["Gameplay", "Tools", "Prototypes"],
-    },
-    {
-      eyebrow: "CV",
-      title: "Technical Stack",
-      body: "Comfortable across Unity/C#, TypeScript, debugging tools, gameplay architecture, and editor extensions.",
-      stats: ["Unity", "C#", "TypeScript"],
-    },
-    {
-      eyebrow: "CV",
-      title: "Download Resume",
-      body: "A polished CV link can live here once the final PDF is ready.",
-      stats: ["PDF resume", "LinkedIn", "Contact"],
+      title: "Experience Timeline",
+      body: "A scrollable overview of my education, professional game development experience, skills, languages, and hobbies.",
+      stats: ["Unity", "Unreal Engine", "Gameplay", "UI"],
     },
   ],
   contact: [
@@ -250,7 +315,7 @@ const panelContent: Record<SectionId, Panel[]> = {
       eyebrow: "Contact",
       title: "Let’s build something playable.",
       body: "Reach out for gameplay programming roles, collaborations, prototypes, or just to talk game feel.",
-      stats: ["hello@example.com", "LinkedIn", "GitHub"],
+      stats: ["LinkedIn", "Email", "Portfolio"],
     },
   ],
 };
@@ -273,10 +338,13 @@ function interpolateRoute(stopProgress: number) {
 }
 
 function App() {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const pathRef = useRef<SVGPathElement | null>(null);
   const targetProgressRef = useRef(0);
   const renderedProgressRef = useRef(0);
   const rafRef = useRef<number | null>(null);
+  const hasTriedMusicRef = useRef(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [motion, setMotion] = useState<MotionState>({
     activeStop: 0,
     routeProgress: scrollStops[0].routePosition,
@@ -293,6 +361,67 @@ function App() {
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
     targetProgressRef.current = maxScroll <= 0 ? 0 : clamp(window.scrollY / maxScroll, 0, 1);
   }, []);
+
+  const playMusic = useCallback(async () => {
+    const audio = audioRef.current;
+
+    if (!audio) {
+      return;
+    }
+
+    audio.volume = 0.28;
+
+    try {
+      await audio.play();
+      setIsMusicPlaying(true);
+    } catch {
+      setIsMusicPlaying(false);
+    }
+  }, []);
+
+  const pauseMusic = useCallback(() => {
+    const audio = audioRef.current;
+
+    if (!audio) {
+      return;
+    }
+
+    audio.pause();
+    setIsMusicPlaying(false);
+  }, []);
+
+  const toggleMusic = useCallback(() => {
+    if (isMusicPlaying) {
+      pauseMusic();
+    } else {
+      void playMusic();
+    }
+  }, [isMusicPlaying, pauseMusic, playMusic]);
+
+  useEffect(() => {
+    const startMusicOnInteraction = () => {
+      if (hasTriedMusicRef.current) {
+        return;
+      }
+
+      hasTriedMusicRef.current = true;
+      void playMusic();
+    };
+
+    window.addEventListener("click", startMusicOnInteraction, { once: true });
+    window.addEventListener("keydown", startMusicOnInteraction, { once: true });
+    window.addEventListener("scroll", startMusicOnInteraction, { once: true, passive: true });
+    window.addEventListener("touchstart", startMusicOnInteraction, { once: true, passive: true });
+    window.addEventListener("wheel", startMusicOnInteraction, { once: true, passive: true });
+
+    return () => {
+      window.removeEventListener("click", startMusicOnInteraction);
+      window.removeEventListener("keydown", startMusicOnInteraction);
+      window.removeEventListener("scroll", startMusicOnInteraction);
+      window.removeEventListener("touchstart", startMusicOnInteraction);
+      window.removeEventListener("wheel", startMusicOnInteraction);
+    };
+  }, [playMusic]);
 
   useEffect(() => {
     updateTargetProgress();
@@ -367,6 +496,7 @@ function App() {
       className="portfolio-scroll"
       style={{ "--scroll-stops": scrollStops.length } as React.CSSProperties}
     >
+      <audio ref={audioRef} src={musicUrl} loop preload="auto" />
       <section className="rider-stage" aria-label="Scroll-driven halfpipe portfolio">
         <img className="stage-background" src={backgroundUrl} alt="" />
         <div className="stage-shade" />
@@ -500,84 +630,156 @@ function App() {
         <article
           className={`content-card ${activePanel.media ? "has-media" : ""} ${
             activePanel.body ? "" : "is-title-only"
-          }`}
+          } ${activeSection.id === "cv" ? "is-cv" : ""}`}
           key={`${activeSection.id}-${activeStop.panelIndex}`}
         >
-          <div className="content-copy">
-            {activePanel.media ? null : (
+          {activeSection.id === "cv" ? (
+            <div className="cv-panel">
               <div className="content-meta">
-                <span>{activePanel.eyebrow}</span>
-                <span>{sectionProgressText}</span>
+                <span>CV</span>
+                <span>Scroll</span>
               </div>
-            )}
-            {activePanel.media ? null : (
-              <h1>
-                {activePanel.href ? (
-                  <a href={activePanel.href} target="_blank" rel="noreferrer">
-                    {activePanel.title}
-                  </a>
-                ) : (
-                  activePanel.title
-                )}
-              </h1>
-            )}
-            {activePanel.body ? (
-              <div className="content-body">
-                {activePanel.body.split("\n\n").map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
+              <h1>Experience Timeline</h1>
+              <div className="cv-scroll" tabIndex={0}>
+                <section className="cv-section">
+                  <h2>Professional Experience</h2>
+                  <div className="cv-timeline">
+                    {cvExperience.map((item) => (
+                      <article className="cv-entry" key={`${item.date}-${item.title}`}>
+                        <time>{item.date}</time>
+                        <div>
+                          <h3>{item.title}</h3>
+                          <p>{item.detail}</p>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="cv-section">
+                  <h2>Education</h2>
+                  <div className="cv-timeline">
+                    {cvEducation.map((item) => (
+                      <article className="cv-entry" key={`${item.date}-${item.title}`}>
+                        <time>{item.date}</time>
+                        <div>
+                          <h3>{item.title}</h3>
+                          <p>{item.detail}</p>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="cv-section">
+                  <h2>Skills</h2>
+                  <div className="cv-chip-grid">
+                    {cvSkills.map((skill) => (
+                      <span key={skill}>{skill}</span>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="cv-section cv-two-column">
+                  <div>
+                    <h2>Languages</h2>
+                    <ul>
+                      {cvLanguages.map((language) => (
+                        <li key={language}>{language}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h2>Hobbies</h2>
+                    <ul>
+                      {cvHobbies.map((hobby) => (
+                        <li key={hobby}>{hobby}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </section>
               </div>
-            ) : null}
-            {!activePanel.media && activePanel.stats.length > 0 ? (
-              <div className="pill-row">
-                {activePanel.stats.map((stat) => (
-                  <span key={stat}>{stat}</span>
-                ))}
-              </div>
-            ) : null}
-            {!activePanel.media && activePanel.href ? (
-              <a className="panel-action" href={activePanel.href} target="_blank" rel="noreferrer">
-                <ArrowUpRight size={16} aria-hidden="true" />
-                View project
-              </a>
-            ) : null}
-            {activeSection.id === "cv" && activeStop.panelIndex === 2 ? (
-              <a className="panel-action" href="#cv" onClick={(event) => event.preventDefault()}>
-                <Download size={16} aria-hidden="true" />
-                Resume placeholder
-              </a>
-            ) : null}
-            {activeSection.id === "contact" ? (
-              <a className="panel-action" href="mailto:hello@example.com">
-                <Mail size={16} aria-hidden="true" />
-                hello@example.com
-              </a>
-            ) : null}
-          </div>
-          {activePanel.media ? (
-            <div className="panel-media">
-              <span className="media-title">{activePanel.title}</span>
-              {activePanel.media.kind === "image" ? (
-                activePanel.href ? (
-                  <a href={activePanel.href} target="_blank" rel="noreferrer" aria-label={`Open ${activePanel.title}`}>
-                    <img src={activePanel.media.src} alt={activePanel.media.alt} />
-                  </a>
-                ) : (
-                  <img src={activePanel.media.src} alt={activePanel.media.alt} />
-                )
-              ) : (
-                <video
-                  aria-label={activePanel.media.label}
-                  controls
-                  loop
-                  muted
-                  playsInline
-                  preload="metadata"
-                  src={activePanel.media.src}
-                />
-              )}
             </div>
-          ) : null}
+          ) : (
+            <>
+              <div className="content-copy">
+                {activePanel.media ? null : (
+                  <div className="content-meta">
+                    <span>{activePanel.eyebrow}</span>
+                    <span>{sectionProgressText}</span>
+                  </div>
+                )}
+                {activePanel.media ? null : (
+                  <h1>
+                    {activePanel.href ? (
+                      <a href={activePanel.href} target="_blank" rel="noreferrer">
+                        {activePanel.title}
+                      </a>
+                    ) : (
+                      activePanel.title
+                    )}
+                  </h1>
+                )}
+                {activePanel.body ? (
+                  <div className="content-body">
+                    {activePanel.body.split("\n\n").map((paragraph) => (
+                      <p key={paragraph}>{paragraph}</p>
+                    ))}
+                  </div>
+                ) : null}
+                {!activePanel.media && activePanel.stats.length > 0 ? (
+                  <div className="pill-row">
+                    {activePanel.stats.map((stat) => (
+                      <span key={stat}>{stat}</span>
+                    ))}
+                  </div>
+                ) : null}
+                {!activePanel.media && activePanel.href ? (
+                  <a className="panel-action" href={activePanel.href} target="_blank" rel="noreferrer">
+                    <ArrowUpRight size={16} aria-hidden="true" />
+                    View project
+                  </a>
+                ) : null}
+                {activeSection.id === "contact" ? (
+                  <>
+                    <a className="panel-action" href={linkedInUrl} target="_blank" rel="noreferrer">
+                      <BriefcaseBusiness size={16} aria-hidden="true" />
+                      LinkedIn
+                    </a>
+                    <a className="panel-action" href="mailto:hello@example.com">
+                      <Mail size={16} aria-hidden="true" />
+                      hello@example.com
+                    </a>
+                  </>
+                ) : null}
+              </div>
+
+              {activePanel.media ? (
+                <div className="panel-media">
+                  <span className="media-title">{activePanel.title}</span>
+                  {activePanel.media.kind === "image" ? (
+                    activePanel.href ? (
+                      <a href={activePanel.href} target="_blank" rel="noreferrer" aria-label={`Open ${activePanel.title}`}>
+                        <img src={activePanel.media.src} alt={activePanel.media.alt} />
+                      </a>
+                    ) : (
+                      <img src={activePanel.media.src} alt={activePanel.media.alt} />
+                    )
+                  ) : (
+                    <video
+                      aria-label={activePanel.media.label}
+                      controls
+                      loop
+                      muted
+                      playsInline
+                      preload="metadata"
+                      src={activePanel.media.src}
+                    />
+                  )}
+                </div>
+              ) : null}
+            </>
+          )}
         </article>
 
         <div className="scroll-hint" aria-hidden="true">
@@ -586,10 +788,17 @@ function App() {
         </div>
 
         <div className="social-links" aria-label="Social links">
+          <button
+            type="button"
+            onClick={toggleMusic}
+            aria-label={isMusicPlaying ? "Pause background music" : "Play background music"}
+          >
+            {isMusicPlaying ? <Volume2 size={18} /> : <VolumeX size={18} />}
+          </button>
           <a href="#github" onClick={(event) => event.preventDefault()} aria-label="GitHub">
             <Code2 size={18} />
           </a>
-          <a href="#linkedin" onClick={(event) => event.preventDefault()} aria-label="LinkedIn">
+          <a href={linkedInUrl} target="_blank" rel="noreferrer" aria-label="LinkedIn">
             <BriefcaseBusiness size={18} />
           </a>
           <a href="mailto:hello@example.com" aria-label="Email">
