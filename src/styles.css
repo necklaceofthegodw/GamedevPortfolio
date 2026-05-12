@@ -521,6 +521,10 @@ a {
   box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.28);
 }
 
+.panel-media-video {
+  flex-basis: 80%;
+}
+
 .media-title {
   position: absolute;
   z-index: 2;
@@ -791,6 +795,10 @@ a {
     flex-basis: 72%;
   }
 
+  .panel-media-video {
+    flex-basis: 78%;
+  }
+
   .markers {
     transform: translateY(1.5rem);
   }
@@ -885,6 +893,10 @@ a {
 
   .panel-media {
     flex-basis: 70%;
+  }
+
+  .panel-media-video {
+    flex-basis: 76%;
   }
 
   .pill-row {

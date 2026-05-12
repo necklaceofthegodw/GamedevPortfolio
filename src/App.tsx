@@ -755,7 +755,7 @@ function App() {
               </div>
 
               {activePanel.media ? (
-                <div className="panel-media">
+                <div className={`panel-media panel-media-${activePanel.media.kind}`}>
                   <span className="media-title">{activePanel.title}</span>
                   {activePanel.media.kind === "image" ? (
                     activePanel.href ? (
