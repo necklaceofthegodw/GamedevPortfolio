@@ -314,8 +314,8 @@ const panelContent: Record<SectionId, Panel[]> = {
   contact: [
     {
       eyebrow: "Contact",
-      title: "Let’s build something playable.",
-      body: "Reach out for gameplay programming roles, collaborations, prototypes, or just to talk game feel.",
+      title: "Let’s build something together.",
+      body: "Reach out for polished gameplay code, UI implementation, tools, prototypes, or thoughtful game-feel work.",
       stats: ["LinkedIn", "Email", "Portfolio"],
     },
   ],
@@ -507,11 +507,6 @@ function App() {
         <div className="viewport-frame" />
 
         <header className="guide-header">
-          <div className="guide-number">1</div>
-          <div className="guide-title">
-            <strong>Rider Guide</strong>
-            <span>Navigate the halfpipe</span>
-          </div>
           <nav className="guide-nav" aria-label="Portfolio sections">
             {sections.map((section) => (
               <button
@@ -709,7 +704,7 @@ function App() {
                 {activePanel.media ? null : (
                   <div className="content-meta">
                     <span>{activePanel.eyebrow}</span>
-                    {activeSection.id === "contact" ? null : <span>{sectionProgressText}</span>}
+                    {activePanelCount === 1 ? null : <span>{sectionProgressText}</span>}
                   </div>
                 )}
                 {activePanel.media ? null : (
