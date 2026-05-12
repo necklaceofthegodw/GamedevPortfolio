@@ -817,13 +817,31 @@ a {
 }
 
 @media (max-width: 640px) {
+  html {
+    scroll-snap-type: y mandatory;
+  }
+
+  .portfolio-scroll {
+    min-height: auto;
+  }
+
   .rider-stage {
+    position: relative;
+    top: auto;
+    height: auto;
     min-height: 100svh;
+    overflow: visible;
   }
 
   .stage-background {
+    position: fixed;
     object-position: center center;
     filter: contrast(1.08) saturate(0.95) brightness(0.58);
+  }
+
+  .stage-shade,
+  .viewport-frame {
+    position: fixed;
   }
 
   .viewport-frame {
@@ -859,23 +877,33 @@ a {
   }
 
   .mobile-deck-shell {
-    position: absolute;
-    inset: 0;
+    position: relative;
     z-index: 20;
-    display: flex;
+    display: block;
     min-width: 0;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: max(0.85rem, env(safe-area-inset-top)) 3.45rem
-      calc(4.7rem + env(safe-area-inset-bottom)) 0.85rem;
     background:
       linear-gradient(90deg, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.22) 58%, rgba(0, 0, 0, 0.7)),
       linear-gradient(180deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.64));
-    overflow: hidden;
+    overflow: visible;
+  }
+
+  .mobile-deck-stack {
+    position: relative;
+    z-index: 1;
+  }
+
+  .mobile-deck-panel {
+    display: flex;
+    min-height: 100svh;
+    align-items: flex-end;
+    padding: max(0.85rem, env(safe-area-inset-top)) 3.45rem
+      calc(4.7rem + env(safe-area-inset-bottom)) 0.85rem;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
 
   .mobile-rail {
-    position: absolute;
+    position: fixed;
     top: max(4rem, calc(env(safe-area-inset-top) + 3.5rem));
     right: 1rem;
     bottom: calc(5.45rem + env(safe-area-inset-bottom));
@@ -1161,7 +1189,7 @@ a {
   }
 
   .mobile-bottom-nav {
-    position: absolute;
+    position: fixed;
     right: 0.75rem;
     bottom: calc(0.72rem + env(safe-area-inset-bottom));
     left: 0.75rem;
@@ -1195,6 +1223,10 @@ a {
   .mobile-bottom-nav button.is-active {
     background: rgba(255, 154, 46, 0.14);
     color: var(--orange-hot);
+  }
+
+  .scroll-space {
+    display: none;
   }
 }
 

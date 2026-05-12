@@ -345,6 +345,7 @@ function App() {
   const renderedProgressRef = useRef(0);
   const rafRef = useRef<number | null>(null);
   const hasTriedMusicRef = useRef(false);
+  const mobileActiveStopRef = useRef(0);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [motion, setMotion] = useState<MotionState>({
     activeStop: 0,
@@ -436,6 +437,22 @@ function App() {
       const next = Math.abs(target - current) < 0.001 ? target : current + (target - current) * 0.13;
 
       renderedProgressRef.current = next;
+
+      if (window.innerWidth <= 640) {
+        const activeStopIndex = clamp(Math.round(next * (scrollStops.length - 1)), 0, scrollStops.length - 1);
+
+        if (activeStopIndex !== mobileActiveStopRef.current) {
+          mobileActiveStopRef.current = activeStopIndex;
+          setMotion((previousMotion) => ({
+            ...previousMotion,
+            activeStop: activeStopIndex,
+            routeProgress: interpolateRoute(next),
+          }));
+        }
+
+        rafRef.current = window.requestAnimationFrame(tick);
+        return;
+      }
 
       if (path) {
         const pathLength = path.getTotalLength();
@@ -823,133 +840,148 @@ function App() {
             </div>
           </div>
 
-          <article
-            className={`mobile-deck-card ${
-              activePanel.media ? "has-media" : ""
-            } ${activeSection.id === "cv" ? "is-cv" : ""}`}
-            key={`mobile-${activeSection.id}-${activeStop.panelIndex}`}
-          >
-            <div className="mobile-deck-meta">
-              <span>{activePanel.eyebrow}</span>
-              <span>{sectionProgressText}</span>
-            </div>
+          <div className="mobile-deck-stack">
+            {scrollStops.map((stop, stopIndex) => {
+              const mobileSection = sections.find((section) => section.id === stop.sectionId) ?? sections[0];
+              const mobilePanel = panelContent[mobileSection.id][stop.panelIndex] ?? panelContent[mobileSection.id][0];
+              const mobilePanelCount = panelContent[mobileSection.id].length;
+              const mobileProgressText =
+                mobilePanelCount === 1
+                  ? "01 / 01"
+                  : `${String(stop.panelIndex + 1).padStart(2, "0")} / ${String(mobilePanelCount).padStart(2, "0")}`;
 
-            {activeSection.id === "cv" ? (
-              <>
-                <h1>Experience Timeline</h1>
-                <div className="mobile-cv-scroll" tabIndex={0}>
-                  <section className="mobile-cv-section">
-                    <h2>Professional Experience</h2>
-                    <div className="mobile-cv-timeline">
-                      {cvExperience.map((item) => (
-                        <article className="mobile-cv-entry" key={`${item.date}-${item.title}`}>
-                          <time>{item.date}</time>
-                          <h3>{item.title}</h3>
-                          <p>{item.detail}</p>
-                        </article>
-                      ))}
+              return (
+                <section className="mobile-deck-panel" key={`mobile-stop-${stopIndex}`}>
+                  <article
+                    className={`mobile-deck-card ${
+                      mobilePanel.media ? "has-media" : ""
+                    } ${mobileSection.id === "cv" ? "is-cv" : ""}`}
+                  >
+                    <div className="mobile-deck-meta">
+                      <span>{mobilePanel.eyebrow}</span>
+                      <span>{mobileProgressText}</span>
                     </div>
-                  </section>
 
-                  <section className="mobile-cv-section">
-                    <h2>Education</h2>
-                    <div className="mobile-cv-timeline">
-                      {cvEducation.map((item) => (
-                        <article className="mobile-cv-entry" key={`${item.date}-${item.title}`}>
-                          <time>{item.date}</time>
-                          <h3>{item.title}</h3>
-                          <p>{item.detail}</p>
-                        </article>
-                      ))}
-                    </div>
-                  </section>
+                    {mobileSection.id === "cv" ? (
+                      <>
+                        <h1>Experience Timeline</h1>
+                        <div className="mobile-cv-scroll" tabIndex={0}>
+                          <section className="mobile-cv-section">
+                            <h2>Professional Experience</h2>
+                            <div className="mobile-cv-timeline">
+                              {cvExperience.map((item) => (
+                                <article className="mobile-cv-entry" key={`${item.date}-${item.title}`}>
+                                  <time>{item.date}</time>
+                                  <h3>{item.title}</h3>
+                                  <p>{item.detail}</p>
+                                </article>
+                              ))}
+                            </div>
+                          </section>
 
-                  <section className="mobile-cv-section">
-                    <h2>Skills</h2>
-                    <div className="mobile-chip-grid">
-                      {cvSkills.map((skill) => (
-                        <span key={skill}>{skill}</span>
-                      ))}
-                    </div>
-                  </section>
+                          <section className="mobile-cv-section">
+                            <h2>Education</h2>
+                            <div className="mobile-cv-timeline">
+                              {cvEducation.map((item) => (
+                                <article className="mobile-cv-entry" key={`${item.date}-${item.title}`}>
+                                  <time>{item.date}</time>
+                                  <h3>{item.title}</h3>
+                                  <p>{item.detail}</p>
+                                </article>
+                              ))}
+                            </div>
+                          </section>
 
-                  <section className="mobile-cv-section">
-                    <h2>Languages & Hobbies</h2>
-                    <div className="mobile-chip-grid">
-                      {[...cvLanguages, ...cvHobbies].map((item) => (
-                        <span key={item}>{item}</span>
-                      ))}
-                    </div>
-                  </section>
-                </div>
-              </>
-            ) : (
-              <>
-                {activePanel.media ? (
-                  <div className={`mobile-panel-media mobile-panel-media-${activePanel.media.kind}`}>
-                    {activePanel.media.kind === "image" ? (
-                      activePanel.href ? (
-                        <a href={activePanel.href} target="_blank" rel="noreferrer" aria-label={`Open ${activePanel.title}`}>
-                          <img src={activePanel.media.src} alt={activePanel.media.alt} />
-                        </a>
-                      ) : (
-                        <img src={activePanel.media.src} alt={activePanel.media.alt} />
-                      )
+                          <section className="mobile-cv-section">
+                            <h2>Skills</h2>
+                            <div className="mobile-chip-grid">
+                              {cvSkills.map((skill) => (
+                                <span key={skill}>{skill}</span>
+                              ))}
+                            </div>
+                          </section>
+
+                          <section className="mobile-cv-section">
+                            <h2>Languages & Hobbies</h2>
+                            <div className="mobile-chip-grid">
+                              {[...cvLanguages, ...cvHobbies].map((item) => (
+                                <span key={item}>{item}</span>
+                              ))}
+                            </div>
+                          </section>
+                        </div>
+                      </>
                     ) : (
-                      <video
-                        aria-label={activePanel.media.label}
-                        controls
-                        loop
-                        muted
-                        playsInline
-                        preload="metadata"
-                        src={activePanel.media.src}
-                      />
+                      <>
+                        {mobilePanel.media ? (
+                          <div className={`mobile-panel-media mobile-panel-media-${mobilePanel.media.kind}`}>
+                            {mobilePanel.media.kind === "image" ? (
+                              mobilePanel.href ? (
+                                <a href={mobilePanel.href} target="_blank" rel="noreferrer" aria-label={`Open ${mobilePanel.title}`}>
+                                  <img src={mobilePanel.media.src} alt={mobilePanel.media.alt} />
+                                </a>
+                              ) : (
+                                <img src={mobilePanel.media.src} alt={mobilePanel.media.alt} />
+                              )
+                            ) : (
+                              <video
+                                aria-label={mobilePanel.media.label}
+                                controls
+                                loop
+                                muted
+                                playsInline
+                                preload="metadata"
+                                src={mobilePanel.media.src}
+                              />
+                            )}
+                          </div>
+                        ) : null}
+
+                        <h1>
+                          {mobilePanel.href ? (
+                            <a href={mobilePanel.href} target="_blank" rel="noreferrer">
+                              {mobilePanel.title}
+                            </a>
+                          ) : (
+                            mobilePanel.title
+                          )}
+                        </h1>
+
+                        {mobilePanel.body ? (
+                          <div className="mobile-content-body">
+                            {mobilePanel.body.split("\n\n").map((paragraph) => (
+                              <p key={paragraph}>{paragraph}</p>
+                            ))}
+                          </div>
+                        ) : null}
+
+                        {mobilePanel.stats.length > 0 && mobileSection.id !== "contact" ? (
+                          <div className="mobile-chip-grid">
+                            {mobilePanel.stats.map((stat) => (
+                              <span key={stat}>{stat}</span>
+                            ))}
+                          </div>
+                        ) : null}
+
+                        {mobileSection.id === "contact" ? (
+                          <div className="mobile-action-row">
+                            <a className="mobile-panel-action" href={linkedInUrl} target="_blank" rel="noreferrer">
+                              <BriefcaseBusiness size={16} aria-hidden="true" />
+                              LinkedIn
+                            </a>
+                            <a className="mobile-panel-action" href={`mailto:${contactEmail}`}>
+                              <Mail size={16} aria-hidden="true" />
+                              Email
+                            </a>
+                          </div>
+                        ) : null}
+                      </>
                     )}
-                  </div>
-                ) : null}
-
-                <h1>
-                  {activePanel.href ? (
-                    <a href={activePanel.href} target="_blank" rel="noreferrer">
-                      {activePanel.title}
-                    </a>
-                  ) : (
-                    activePanel.title
-                  )}
-                </h1>
-
-                {activePanel.body ? (
-                  <div className="mobile-content-body">
-                    {activePanel.body.split("\n\n").map((paragraph) => (
-                      <p key={paragraph}>{paragraph}</p>
-                    ))}
-                  </div>
-                ) : null}
-
-                {activePanel.stats.length > 0 && activeSection.id !== "contact" ? (
-                  <div className="mobile-chip-grid">
-                    {activePanel.stats.map((stat) => (
-                      <span key={stat}>{stat}</span>
-                    ))}
-                  </div>
-                ) : null}
-
-                {activeSection.id === "contact" ? (
-                  <div className="mobile-action-row">
-                    <a className="mobile-panel-action" href={linkedInUrl} target="_blank" rel="noreferrer">
-                      <BriefcaseBusiness size={16} aria-hidden="true" />
-                      LinkedIn
-                    </a>
-                    <a className="mobile-panel-action" href={`mailto:${contactEmail}`}>
-                      <Mail size={16} aria-hidden="true" />
-                      Email
-                    </a>
-                  </div>
-                ) : null}
-              </>
-            )}
-          </article>
+                  </article>
+                </section>
+              );
+            })}
+          </div>
 
           <nav className="mobile-bottom-nav" aria-label="Mobile portfolio sections">
             {sections.map((section) => {
