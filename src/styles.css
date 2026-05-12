@@ -1054,15 +1054,7 @@ a {
     display: grid;
     min-height: 0;
     gap: 0.62rem;
-    overflow-y: auto;
     padding-right: 0.2rem;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 154, 46, 0.64) rgba(255, 248, 233, 0.08);
-  }
-
-  .mobile-deck-card.has-media .mobile-content-body {
-    max-height: 7.8rem;
   }
 
   .mobile-content-body p {

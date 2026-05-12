@@ -935,26 +935,18 @@ function App() {
                   </div>
                 ) : null}
 
-                <div className="mobile-action-row">
-                  {activePanel.href ? (
-                    <a className="mobile-panel-action" href={activePanel.href} target="_blank" rel="noreferrer">
-                      <ArrowUpRight size={16} aria-hidden="true" />
-                      View project
+                {activeSection.id === "contact" ? (
+                  <div className="mobile-action-row">
+                    <a className="mobile-panel-action" href={linkedInUrl} target="_blank" rel="noreferrer">
+                      <BriefcaseBusiness size={16} aria-hidden="true" />
+                      LinkedIn
                     </a>
-                  ) : null}
-                  {activeSection.id === "contact" ? (
-                    <>
-                      <a className="mobile-panel-action" href={linkedInUrl} target="_blank" rel="noreferrer">
-                        <BriefcaseBusiness size={16} aria-hidden="true" />
-                        LinkedIn
-                      </a>
-                      <a className="mobile-panel-action" href={`mailto:${contactEmail}`}>
-                        <Mail size={16} aria-hidden="true" />
-                        Email
-                      </a>
-                    </>
-                  ) : null}
-                </div>
+                    <a className="mobile-panel-action" href={`mailto:${contactEmail}`}>
+                      <Mail size={16} aria-hidden="true" />
+                      Email
+                    </a>
+                  </div>
+                ) : null}
               </>
             )}
           </article>
