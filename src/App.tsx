@@ -123,6 +123,7 @@ type ScrollStop = {
 
 type MotionState = {
   activeStop: number;
+  scrollProgress: number;
   routeProgress: number;
   rider: {
     x: number;
@@ -346,10 +347,10 @@ function App() {
   const rafRef = useRef<number | null>(null);
   const hasTriedMusicRef = useRef(false);
   const mobileActiveStopRef = useRef(0);
-  const wheelDragRef = useRef({ pointerId: -1, startY: 0, isDragging: false, hasMoved: false });
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [motion, setMotion] = useState<MotionState>({
     activeStop: 0,
+    scrollProgress: 0,
     routeProgress: scrollStops[0].routePosition,
     rider: { x: 180, y: 375, angle: 0 },
     markers: sections.map(() => ({ x: 0, y: 0 })),
@@ -450,6 +451,7 @@ function App() {
         setMotion((previousMotion) => {
           if (
             previousMotion.activeStop === activeStopIndex &&
+            Math.abs(previousMotion.scrollProgress - next) < 0.001 &&
             Math.abs(previousMotion.routeProgress - routeProgress) < 0.001
           ) {
             return previousMotion;
@@ -458,6 +460,7 @@ function App() {
           return {
             ...previousMotion,
             activeStop: activeStopIndex,
+            scrollProgress: next,
             routeProgress,
           };
         });
@@ -494,6 +497,7 @@ function App() {
 
         setMotion({
           activeStop: activeStopIndex,
+          scrollProgress: next,
           routeProgress,
           rider: {
             x: point.x + Math.cos(normalAngle) * riderOffset,
@@ -531,101 +535,6 @@ function App() {
     [scrollToProgress],
   );
 
-  const progressFromPointerY = useCallback((clientY: number) => {
-    const top = window.innerHeight * 0.12;
-    const bottom = window.innerHeight - 92;
-    return clamp((clientY - top) / Math.max(1, bottom - top), 0, 1);
-  }, []);
-
-  const handleMobileWheelPointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.currentTarget.setPointerCapture(event.pointerId);
-    wheelDragRef.current = {
-      pointerId: event.pointerId,
-      startY: event.clientY,
-      isDragging: true,
-      hasMoved: false,
-    };
-  }, []);
-
-  const handleMobileWheelPointerMove = useCallback(
-    (event: React.PointerEvent<HTMLDivElement>) => {
-      const dragState = wheelDragRef.current;
-
-      if (!dragState.isDragging || dragState.pointerId !== event.pointerId) {
-        return;
-      }
-
-      if (Math.abs(event.clientY - dragState.startY) > 8) {
-        dragState.hasMoved = true;
-      }
-
-      if (dragState.hasMoved) {
-        scrollToProgress(progressFromPointerY(event.clientY), "auto");
-      }
-    },
-    [progressFromPointerY, scrollToProgress],
-  );
-
-  const handleMobileWheelPointerUp = useCallback(
-    (event: React.PointerEvent<HTMLDivElement>) => {
-      const dragState = wheelDragRef.current;
-
-      if (!dragState.isDragging || dragState.pointerId !== event.pointerId) {
-        return;
-      }
-
-      wheelDragRef.current = { pointerId: -1, startY: 0, isDragging: false, hasMoved: false };
-
-      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-        event.currentTarget.releasePointerCapture(event.pointerId);
-      }
-
-      if (dragState.hasMoved) {
-        scrollToStop(Math.round(targetProgressRef.current * (scrollStops.length - 1)));
-        return;
-      }
-
-      const bounds = event.currentTarget.getBoundingClientRect();
-      const direction = event.clientY < bounds.top + bounds.height / 2 ? -1 : 1;
-      scrollToStop(motion.activeStop + direction);
-    },
-    [motion.activeStop, scrollToStop],
-  );
-
-  const handleMobileWheelPointerCancel = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
-    wheelDragRef.current = { pointerId: -1, startY: 0, isDragging: false, hasMoved: false };
-
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-  }, []);
-
-  const handleMobileWheelKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
-      if (event.key === "ArrowUp" || event.key === "ArrowLeft" || event.key === "PageUp") {
-        event.preventDefault();
-        scrollToStop(motion.activeStop - 1);
-      }
-
-      if (event.key === "ArrowDown" || event.key === "ArrowRight" || event.key === "PageDown") {
-        event.preventDefault();
-        scrollToStop(motion.activeStop + 1);
-      }
-
-      if (event.key === "Home") {
-        event.preventDefault();
-        scrollToStop(0);
-      }
-
-      if (event.key === "End") {
-        event.preventDefault();
-        scrollToStop(scrollStops.length - 1);
-      }
-    },
-    [motion.activeStop, scrollToStop],
-  );
-
   const sectionProgressText = useMemo(() => {
     if (activePanelCount === 1) {
       return "01 / 01";
@@ -633,7 +542,7 @@ function App() {
 
     return `${String(activeStop.panelIndex + 1).padStart(2, "0")} / ${String(activePanelCount).padStart(2, "0")}`;
   }, [activePanelCount, activeStop.panelIndex]);
-  const mobileStopProgress = clamp(motion.routeProgress, 0, 1);
+  const mobileWheelProgress = clamp(motion.scrollProgress, 0, 1);
 
   return (
     <main
@@ -929,25 +838,13 @@ function App() {
             {
               "--mobile-stop-index": motion.activeStop,
               "--mobile-stop-count": scrollStops.length,
-              "--mobile-progress": mobileStopProgress,
-              "--mobile-wheel-rotation": `${mobileStopProgress * 1440}deg`,
+              "--mobile-wheel-rotation": `${mobileWheelProgress * 1440}deg`,
             } as React.CSSProperties
           }
         >
           <div
             className="mobile-wheel-control"
-            role="slider"
-            tabIndex={0}
-            aria-label="Portfolio scroll wheel"
-            aria-valuemin={1}
-            aria-valuemax={scrollStops.length}
-            aria-valuenow={motion.activeStop + 1}
-            aria-valuetext={`${activeSection.label}, stop ${motion.activeStop + 1} of ${scrollStops.length}`}
-            onPointerDown={handleMobileWheelPointerDown}
-            onPointerMove={handleMobileWheelPointerMove}
-            onPointerUp={handleMobileWheelPointerUp}
-            onPointerCancel={handleMobileWheelPointerCancel}
-            onKeyDown={handleMobileWheelKeyDown}
+            aria-hidden="true"
           >
             <img className="mobile-wheel-image" src="/backgrounds/skate_wheel_scroll.png" alt="" draggable="false" />
           </div>
@@ -956,11 +853,6 @@ function App() {
             {scrollStops.map((stop, stopIndex) => {
               const mobileSection = sections.find((section) => section.id === stop.sectionId) ?? sections[0];
               const mobilePanel = panelContent[mobileSection.id][stop.panelIndex] ?? panelContent[mobileSection.id][0];
-              const mobilePanelCount = panelContent[mobileSection.id].length;
-              const mobileProgressText =
-                mobilePanelCount === 1
-                  ? "01 / 01"
-                  : `${String(stop.panelIndex + 1).padStart(2, "0")} / ${String(mobilePanelCount).padStart(2, "0")}`;
 
               return (
                 <section className="mobile-showcase-panel" key={`mobile-stop-${stopIndex}`}>
@@ -969,7 +861,7 @@ function App() {
                       <div className="mobile-content-top">
                         {mobilePanel.media ? (
                           <div className="mobile-media-block">
-                            <span className="mobile-media-badge">{mobilePanel.eyebrow}</span>
+                            <span className="mobile-media-badge">{mobilePanel.title}</span>
                             {mobilePanel.media.kind === "image" ? (
                               mobilePanel.href ? (
                                 <a href={mobilePanel.href} target="_blank" rel="noreferrer" aria-label={`Open ${mobilePanel.title}`}>
@@ -992,21 +884,19 @@ function App() {
                           </div>
                         ) : null}
 
-                        <div className="mobile-block-heading">
-                          <div className="mobile-block-meta">
-                            <span>{mobilePanel.eyebrow}</span>
-                            <span>{mobileProgressText}</span>
+                        {!mobilePanel.media ? (
+                          <div className="mobile-block-heading">
+                            <h1>
+                              {mobilePanel.href ? (
+                                <a href={mobilePanel.href} target="_blank" rel="noreferrer">
+                                  {mobilePanel.title}
+                                </a>
+                              ) : (
+                                mobilePanel.title
+                              )}
+                            </h1>
                           </div>
-                          <h1>
-                            {mobilePanel.href ? (
-                              <a href={mobilePanel.href} target="_blank" rel="noreferrer">
-                                {mobilePanel.title}
-                              </a>
-                            ) : (
-                              mobilePanel.title
-                            )}
-                          </h1>
-                        </div>
+                        ) : null}
                       </div>
 
                       {mobileSection.id === "cv" ? (

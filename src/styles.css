@@ -972,27 +972,17 @@ a {
     top: 0.55rem;
     left: 0.55rem;
     z-index: 2;
+    max-width: calc(100% - 1.1rem);
     border: 1px solid rgba(255, 248, 233, 0.32);
-    border-radius: 999px;
+    border-radius: 0.34rem;
     padding: 0.28rem 0.52rem;
     background: rgba(4, 7, 8, 0.72);
     color: var(--orange-hot);
     font-size: 0.62rem;
     font-weight: 900;
     letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .mobile-block-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding-right: 0.85rem;
-    color: #ffd99d;
-    font-size: 0.6rem;
-    font-weight: 950;
-    letter-spacing: 0.06em;
+    line-height: 1.05;
+    overflow-wrap: break-word;
     text-transform: uppercase;
   }
 
@@ -1023,21 +1013,11 @@ a {
     border-radius: 50%;
     padding: 0;
     background: transparent;
-    cursor: grab;
-    touch-action: none;
+    pointer-events: none;
     transform: translateY(-50%);
     overflow: hidden;
     user-select: none;
     -webkit-user-select: none;
-  }
-
-  .mobile-wheel-control:active {
-    cursor: grabbing;
-  }
-
-  .mobile-wheel-control:focus-visible {
-    outline: 3px solid rgba(255, 208, 138, 0.8);
-    outline-offset: 0.2rem;
   }
 
   .mobile-wheel-image {
