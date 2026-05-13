@@ -950,9 +950,6 @@ function App() {
             onKeyDown={handleMobileWheelKeyDown}
           >
             <img className="mobile-wheel-image" src="/backgrounds/skate_wheel_scroll.png" alt="" draggable="false" />
-            <span className="mobile-wheel-label">
-              <span>{activeSection.nav}</span>
-            </span>
           </div>
 
           <div className="mobile-showcase-stack">
