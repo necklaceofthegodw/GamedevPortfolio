@@ -35,6 +35,16 @@ const wheelSectionLabels = {
   cv: "CURRICULUM VITAE",
   contact: "CONTACT",
 } satisfies Record<SectionId, string>;
+const wheelLabelSeparator = "\u2022";
+
+type WheelLabelGlyph = {
+  angle: number;
+  char: string;
+  isSeparator: boolean;
+  key: string;
+  x: number;
+  y: number;
+};
 
 type Section = {
   id: SectionId;
@@ -348,6 +358,36 @@ function interpolateRoute(stopProgress: number) {
   );
 }
 
+function createWheelLabelGlyphs(label: string): WheelLabelGlyph[] {
+  const radius = 33.2;
+  const segmentCenters = [5, 125, 245];
+  const span = label.length > 10 ? 108 : 82;
+  const text = `${label} ${wheelLabelSeparator}`;
+  const weights = [...text].map((char) => (char === "I" || char === " " ? 0.55 : char === wheelLabelSeparator ? 0.75 : 1));
+  const totalWeight = weights.reduce((total, weight) => total + weight, 0);
+
+  return segmentCenters.flatMap((centerAngle, segmentIndex) => {
+    let currentWeight = 0;
+
+    return [...text].map((char, charIndex) => {
+      const weight = weights[charIndex];
+      const angle = centerAngle - span / 2 + ((currentWeight + weight / 2) / totalWeight) * span;
+      const radians = (angle * Math.PI) / 180;
+
+      currentWeight += weight;
+
+      return {
+        angle,
+        char,
+        isSeparator: char === wheelLabelSeparator,
+        x: 50 + Math.sin(radians) * radius,
+        y: 50 - Math.cos(radians) * radius,
+        key: `${segmentIndex}-${charIndex}`,
+      };
+    });
+  });
+}
+
 function App() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const pathRef = useRef<SVGPathElement | null>(null);
@@ -571,11 +611,10 @@ function App() {
     return `${String(activeStop.panelIndex + 1).padStart(2, "0")} / ${String(activePanelCount).padStart(2, "0")}`;
   }, [activePanelCount, activeStop.panelIndex]);
   const mobileWheelProgress = clamp(motion.scrollProgress, 0, 1);
+  const wheelLabelGlyphs = useMemo(() => createWheelLabelGlyphs(displayedWheelLabel), [displayedWheelLabel]);
   const wheelLabelClassName = `mobile-wheel-label ${isWheelLabelVisible ? "is-visible" : ""} ${
     displayedWheelLabel.length > 10 ? "is-long" : ""
   }`;
-  const wheelLabelStops = [8.333, 41.666, 75];
-  const wheelSeparatorStops = [25, 58.333, 91.666];
 
   return (
     <main
@@ -882,36 +921,17 @@ function App() {
             <div className="mobile-wheel-rotor">
               <img className="mobile-wheel-image" src="/backgrounds/skate_wheel_scroll.png" alt="" draggable="false" />
               <svg className={wheelLabelClassName} viewBox="0 0 100 100" focusable="false">
-                <defs>
-                  <path
-                    id="mobile-wheel-label-path"
-                    d="M 50 18.7 A 31.3 31.3 0 1 1 49.9 18.7 A 31.3 31.3 0 1 1 50 18.7"
-                  />
-                </defs>
-                <text className="mobile-wheel-label-copy" dy="0.34em">
-                  {wheelLabelStops.map((offset) => (
-                    <textPath
-                      href="#mobile-wheel-label-path"
-                      key={`wheel-label-${offset}`}
-                      startOffset={`${offset}%`}
-                      textAnchor="middle"
-                    >
-                      {displayedWheelLabel}
-                    </textPath>
-                  ))}
-                </text>
-                <text className="mobile-wheel-label-separators" dy="0.34em">
-                  {wheelSeparatorStops.map((offset) => (
-                    <textPath
-                      href="#mobile-wheel-label-path"
-                      key={`wheel-label-separator-${offset}`}
-                      startOffset={`${offset}%`}
-                      textAnchor="middle"
-                    >
-                      ◆
-                    </textPath>
-                  ))}
-                </text>
+                {wheelLabelGlyphs.map((glyph) => (
+                  <text
+                    className={glyph.isSeparator ? "mobile-wheel-label-separator" : "mobile-wheel-label-glyph"}
+                    key={glyph.key}
+                    x={glyph.x}
+                    y={glyph.y}
+                    transform={`rotate(${glyph.angle} ${glyph.x} ${glyph.y})`}
+                  >
+                    {glyph.char}
+                  </text>
+                ))}
               </svg>
             </div>
           </div>

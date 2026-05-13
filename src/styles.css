@@ -1055,9 +1055,9 @@ a {
     height: 100%;
     fill: #111314;
     font-family: Rockwell, "Rockwell Extra Bold", "Cooper Black", Georgia, "Times New Roman", serif;
-    font-size: 5.95px;
+    font-size: 5.7px;
     font-weight: 1000;
-    letter-spacing: 0.09em;
+    letter-spacing: 0;
     opacity: 0;
     overflow: visible;
     paint-order: stroke fill;
@@ -1074,24 +1074,18 @@ a {
   }
 
   .mobile-wheel-label.is-long {
-    font-size: 4.35px;
-    letter-spacing: 0.035em;
+    font-size: 3.85px;
     stroke-width: 0.22px;
   }
 
   .mobile-wheel-label text {
-    dominant-baseline: middle;
-  }
-
-  .mobile-wheel-label-copy {
-    dominant-baseline: middle;
+    alignment-baseline: central;
+    dominant-baseline: central;
     text-anchor: middle;
   }
 
-  .mobile-wheel-label-separators {
-    dominant-baseline: middle;
-    font-size: 0.72em;
-    text-anchor: middle;
+  .mobile-wheel-label-separator {
+    font-size: 0.78em;
   }
 
   .mobile-content-body {
