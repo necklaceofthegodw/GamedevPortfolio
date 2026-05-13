@@ -346,6 +346,7 @@ function App() {
   const rafRef = useRef<number | null>(null);
   const hasTriedMusicRef = useRef(false);
   const mobileActiveStopRef = useRef(0);
+  const wheelDragRef = useRef({ pointerId: -1, startY: 0, isDragging: false, hasMoved: false });
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [motion, setMotion] = useState<MotionState>({
     activeStop: 0,
@@ -440,15 +441,26 @@ function App() {
 
       if (window.innerWidth <= 640) {
         const activeStopIndex = clamp(Math.round(next * (scrollStops.length - 1)), 0, scrollStops.length - 1);
+        const routeProgress = interpolateRoute(next);
 
         if (activeStopIndex !== mobileActiveStopRef.current) {
           mobileActiveStopRef.current = activeStopIndex;
-          setMotion((previousMotion) => ({
+        }
+
+        setMotion((previousMotion) => {
+          if (
+            previousMotion.activeStop === activeStopIndex &&
+            Math.abs(previousMotion.routeProgress - routeProgress) < 0.001
+          ) {
+            return previousMotion;
+          }
+
+          return {
             ...previousMotion,
             activeStop: activeStopIndex,
-            routeProgress: interpolateRoute(next),
-          }));
-        }
+            routeProgress,
+          };
+        });
 
         rafRef.current = window.requestAnimationFrame(tick);
         return;
@@ -459,13 +471,21 @@ function App() {
         const routeProgress = interpolateRoute(next);
         const distance = clamp(routeProgress, 0, 1) * pathLength;
         const point = path.getPointAtLength(distance);
-        const tangent = path.getPointAtLength(clamp(distance + 8, 0, pathLength));
-        const angle = (Math.atan2(tangent.y - point.y, tangent.x - point.x) * 180) / Math.PI;
+        const tangentSample = 8;
+        const isAtRouteEnd = distance > pathLength - tangentSample;
+        const tangent = path.getPointAtLength(
+          isAtRouteEnd
+            ? clamp(distance - tangentSample, 0, pathLength)
+            : clamp(distance + tangentSample, 0, pathLength),
+        );
+        const angle = isAtRouteEnd
+          ? (Math.atan2(point.y - tangent.y, point.x - tangent.x) * 180) / Math.PI
+          : (Math.atan2(tangent.y - point.y, tangent.x - point.x) * 180) / Math.PI;
         const normalAngle = ((angle - 90) * Math.PI) / 180;
         const riderOffset = 45;
         const endpointLift =
-          Math.max(0, 1 - routeProgress / 0.12) * 34 +
-          Math.max(0, 1 - (1 - routeProgress) / 0.12) * 34;
+          Math.max(0, 1 - routeProgress / 0.14) * 58 +
+          Math.max(0, 1 - (1 - routeProgress) / 0.14) * 58;
         const activeStopIndex = clamp(Math.round(next * (scrollStops.length - 1)), 0, scrollStops.length - 1);
         const markers = sections.map((section) => {
           const markerPoint = path.getPointAtLength(clamp(section.routePosition, 0, 1) * pathLength);
@@ -498,11 +518,113 @@ function App() {
     };
   }, [updateTargetProgress]);
 
-  const scrollToStop = useCallback((stopIndex: number) => {
+  const scrollToProgress = useCallback((progress: number, behavior: ScrollBehavior = "smooth") => {
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = clamp(stopIndex / (scrollStops.length - 1), 0, 1);
-    window.scrollTo({ top: maxScroll * progress, behavior: "smooth" });
+    window.scrollTo({ top: maxScroll * clamp(progress, 0, 1), behavior });
   }, []);
+
+  const scrollToStop = useCallback(
+    (stopIndex: number, behavior: ScrollBehavior = "smooth") => {
+      const progress = clamp(stopIndex / (scrollStops.length - 1), 0, 1);
+      scrollToProgress(progress, behavior);
+    },
+    [scrollToProgress],
+  );
+
+  const progressFromPointerY = useCallback((clientY: number) => {
+    const top = window.innerHeight * 0.12;
+    const bottom = window.innerHeight - 92;
+    return clamp((clientY - top) / Math.max(1, bottom - top), 0, 1);
+  }, []);
+
+  const handleMobileWheelPointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    wheelDragRef.current = {
+      pointerId: event.pointerId,
+      startY: event.clientY,
+      isDragging: true,
+      hasMoved: false,
+    };
+  }, []);
+
+  const handleMobileWheelPointerMove = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      const dragState = wheelDragRef.current;
+
+      if (!dragState.isDragging || dragState.pointerId !== event.pointerId) {
+        return;
+      }
+
+      if (Math.abs(event.clientY - dragState.startY) > 8) {
+        dragState.hasMoved = true;
+      }
+
+      if (dragState.hasMoved) {
+        scrollToProgress(progressFromPointerY(event.clientY), "auto");
+      }
+    },
+    [progressFromPointerY, scrollToProgress],
+  );
+
+  const handleMobileWheelPointerUp = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      const dragState = wheelDragRef.current;
+
+      if (!dragState.isDragging || dragState.pointerId !== event.pointerId) {
+        return;
+      }
+
+      wheelDragRef.current = { pointerId: -1, startY: 0, isDragging: false, hasMoved: false };
+
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+
+      if (dragState.hasMoved) {
+        scrollToStop(Math.round(targetProgressRef.current * (scrollStops.length - 1)));
+        return;
+      }
+
+      const bounds = event.currentTarget.getBoundingClientRect();
+      const direction = event.clientY < bounds.top + bounds.height / 2 ? -1 : 1;
+      scrollToStop(motion.activeStop + direction);
+    },
+    [motion.activeStop, scrollToStop],
+  );
+
+  const handleMobileWheelPointerCancel = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    wheelDragRef.current = { pointerId: -1, startY: 0, isDragging: false, hasMoved: false };
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  }, []);
+
+  const handleMobileWheelKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === "ArrowUp" || event.key === "ArrowLeft" || event.key === "PageUp") {
+        event.preventDefault();
+        scrollToStop(motion.activeStop - 1);
+      }
+
+      if (event.key === "ArrowDown" || event.key === "ArrowRight" || event.key === "PageDown") {
+        event.preventDefault();
+        scrollToStop(motion.activeStop + 1);
+      }
+
+      if (event.key === "Home") {
+        event.preventDefault();
+        scrollToStop(0);
+      }
+
+      if (event.key === "End") {
+        event.preventDefault();
+        scrollToStop(scrollStops.length - 1);
+      }
+    },
+    [motion.activeStop, scrollToStop],
+  );
 
   const sectionProgressText = useMemo(() => {
     if (activePanelCount === 1) {
@@ -511,8 +633,7 @@ function App() {
 
     return `${String(activeStop.panelIndex + 1).padStart(2, "0")} / ${String(activePanelCount).padStart(2, "0")}`;
   }, [activePanelCount, activeStop.panelIndex]);
-  const mobileStopProgress =
-    scrollStops.length <= 1 ? 0 : motion.activeStop / (scrollStops.length - 1);
+  const mobileStopProgress = clamp(motion.routeProgress, 0, 1);
 
   return (
     <main
@@ -802,45 +923,39 @@ function App() {
         </article>
 
         <section
-          className="mobile-deck-shell"
+          className="mobile-showcase-shell"
           aria-label="Mobile skateboard deck portfolio"
           style={
             {
               "--mobile-stop-index": motion.activeStop,
               "--mobile-stop-count": scrollStops.length,
               "--mobile-progress": mobileStopProgress,
+              "--mobile-wheel-rotation": `${mobileStopProgress * 1440}deg`,
             } as React.CSSProperties
           }
         >
-          <div className="mobile-rail">
-            <div className="mobile-section-bolts">
-              {sections.map((section) => {
-                const Icon = section.icon;
-                const stopIndex = sectionStartStops[section.id];
-                const boltProgress = scrollStops.length <= 1 ? 0 : stopIndex / (scrollStops.length - 1);
-
-                return (
-                  <button
-                    className={`mobile-section-bolt ${
-                      section.id === activeSection.id ? "is-active" : ""
-                    }`}
-                    key={section.id}
-                    type="button"
-                    onClick={() => scrollToStop(stopIndex)}
-                    aria-label={section.label}
-                    style={{ "--bolt-progress": boltProgress } as React.CSSProperties}
-                  >
-                    <Icon size={13} aria-hidden="true" />
-                  </button>
-                );
-              })}
-            </div>
-            <div className="mobile-truck">
-              <img src="/backgrounds/skate_truck.png" alt="" />
-            </div>
+          <div
+            className="mobile-wheel-control"
+            role="slider"
+            tabIndex={0}
+            aria-label="Portfolio scroll wheel"
+            aria-valuemin={1}
+            aria-valuemax={scrollStops.length}
+            aria-valuenow={motion.activeStop + 1}
+            aria-valuetext={`${activeSection.label}, stop ${motion.activeStop + 1} of ${scrollStops.length}`}
+            onPointerDown={handleMobileWheelPointerDown}
+            onPointerMove={handleMobileWheelPointerMove}
+            onPointerUp={handleMobileWheelPointerUp}
+            onPointerCancel={handleMobileWheelPointerCancel}
+            onKeyDown={handleMobileWheelKeyDown}
+          >
+            <img className="mobile-wheel-image" src="/backgrounds/skate_wheel_scroll.png" alt="" draggable="false" />
+            <span className="mobile-wheel-label">
+              <span>{activeSection.nav}</span>
+            </span>
           </div>
 
-          <div className="mobile-deck-stack">
+          <div className="mobile-showcase-stack">
             {scrollStops.map((stop, stopIndex) => {
               const mobileSection = sections.find((section) => section.id === stop.sectionId) ?? sections[0];
               const mobilePanel = panelContent[mobileSection.id][stop.panelIndex] ?? panelContent[mobileSection.id][0];
@@ -851,20 +966,53 @@ function App() {
                   : `${String(stop.panelIndex + 1).padStart(2, "0")} / ${String(mobilePanelCount).padStart(2, "0")}`;
 
               return (
-                <section className="mobile-deck-panel" key={`mobile-stop-${stopIndex}`}>
-                  <article
-                    className={`mobile-deck-card ${
-                      mobilePanel.media ? "has-media" : ""
-                    } ${mobileSection.id === "cv" ? "is-cv" : ""}`}
-                  >
-                    <div className="mobile-deck-meta">
-                      <span>{mobilePanel.eyebrow}</span>
-                      <span>{mobileProgressText}</span>
-                    </div>
+                <section className="mobile-showcase-panel" key={`mobile-stop-${stopIndex}`}>
+                  <article className={`mobile-showcase-card ${mobileSection.id === "cv" ? "is-cv" : ""}`}>
+                    <div className={`mobile-content-container ${mobilePanel.media ? "" : "is-text-only"}`}>
+                      <div className="mobile-content-top">
+                        {mobilePanel.media ? (
+                          <div className="mobile-media-block">
+                            <span className="mobile-media-badge">{mobilePanel.eyebrow}</span>
+                            {mobilePanel.media.kind === "image" ? (
+                              mobilePanel.href ? (
+                                <a href={mobilePanel.href} target="_blank" rel="noreferrer" aria-label={`Open ${mobilePanel.title}`}>
+                                  <img src={mobilePanel.media.src} alt={mobilePanel.media.alt} />
+                                </a>
+                              ) : (
+                                <img src={mobilePanel.media.src} alt={mobilePanel.media.alt} />
+                              )
+                            ) : (
+                              <video
+                                aria-label={mobilePanel.media.label}
+                                controls
+                                loop
+                                muted
+                                playsInline
+                                preload="metadata"
+                                src={mobilePanel.media.src}
+                              />
+                            )}
+                          </div>
+                        ) : null}
 
-                    {mobileSection.id === "cv" ? (
-                      <>
-                        <h1>Experience Timeline</h1>
+                        <div className="mobile-block-heading">
+                          <div className="mobile-block-meta">
+                            <span>{mobilePanel.eyebrow}</span>
+                            <span>{mobileProgressText}</span>
+                          </div>
+                          <h1>
+                            {mobilePanel.href ? (
+                              <a href={mobilePanel.href} target="_blank" rel="noreferrer">
+                                {mobilePanel.title}
+                              </a>
+                            ) : (
+                              mobilePanel.title
+                            )}
+                          </h1>
+                        </div>
+                      </div>
+
+                      {mobileSection.id === "cv" ? (
                         <div className="mobile-cv-scroll" tabIndex={0}>
                           <section className="mobile-cv-section">
                             <h2>Professional Experience</h2>
@@ -910,45 +1058,11 @@ function App() {
                             </div>
                           </section>
                         </div>
-                      </>
-                    ) : (
-                      <>
-                        {mobilePanel.media ? (
-                          <div className={`mobile-panel-media mobile-panel-media-${mobilePanel.media.kind}`}>
-                            {mobilePanel.media.kind === "image" ? (
-                              mobilePanel.href ? (
-                                <a href={mobilePanel.href} target="_blank" rel="noreferrer" aria-label={`Open ${mobilePanel.title}`}>
-                                  <img src={mobilePanel.media.src} alt={mobilePanel.media.alt} />
-                                </a>
-                              ) : (
-                                <img src={mobilePanel.media.src} alt={mobilePanel.media.alt} />
-                              )
-                            ) : (
-                              <video
-                                aria-label={mobilePanel.media.label}
-                                controls
-                                loop
-                                muted
-                                playsInline
-                                preload="metadata"
-                                src={mobilePanel.media.src}
-                              />
-                            )}
-                          </div>
-                        ) : null}
-
-                        <h1>
-                          {mobilePanel.href ? (
-                            <a href={mobilePanel.href} target="_blank" rel="noreferrer">
-                              {mobilePanel.title}
-                            </a>
-                          ) : (
-                            mobilePanel.title
-                          )}
-                        </h1>
-
+                      ) : (
+                        <>
                         {mobilePanel.body ? (
                           <div className="mobile-content-body">
+                            <span className="mobile-wheel-text-wrap" aria-hidden="true" />
                             {mobilePanel.body.split("\n\n").map((paragraph) => (
                               <p key={paragraph}>{paragraph}</p>
                             ))}
@@ -975,8 +1089,9 @@ function App() {
                             </a>
                           </div>
                         ) : null}
-                      </>
-                    )}
+                        </>
+                      )}
+                    </div>
                   </article>
                 </section>
               );
