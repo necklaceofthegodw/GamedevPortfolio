@@ -574,6 +574,8 @@ function App() {
   const wheelLabelClassName = `mobile-wheel-label ${isWheelLabelVisible ? "is-visible" : ""} ${
     displayedWheelLabel.length > 10 ? "is-long" : ""
   }`;
+  const wheelLabelStops = [8.333, 41.666, 75];
+  const wheelSeparatorStops = [25, 58.333, 91.666];
 
   return (
     <main
@@ -883,27 +885,27 @@ function App() {
                 <defs>
                   <path
                     id="mobile-wheel-label-path"
-                    d="M 50 18.35 A 31.65 31.65 0 1 1 49.9 18.35 A 31.65 31.65 0 1 1 50 18.35"
+                    d="M 50 18.7 A 31.3 31.3 0 1 1 49.9 18.7 A 31.3 31.3 0 1 1 50 18.7"
                   />
                 </defs>
-                <text className="mobile-wheel-label-copy">
-                  {[0, 1, 2].map((repeatIndex) => (
+                <text className="mobile-wheel-label-copy" dy="0.34em">
+                  {wheelLabelStops.map((offset) => (
                     <textPath
                       href="#mobile-wheel-label-path"
-                      key={`wheel-label-${repeatIndex}`}
-                      startOffset={`${8.333 + repeatIndex * 33.333}%`}
+                      key={`wheel-label-${offset}`}
+                      startOffset={`${offset}%`}
                       textAnchor="middle"
                     >
                       {displayedWheelLabel}
                     </textPath>
                   ))}
                 </text>
-                <text className="mobile-wheel-label-separators">
-                  {[0, 1, 2].map((repeatIndex) => (
+                <text className="mobile-wheel-label-separators" dy="0.34em">
+                  {wheelSeparatorStops.map((offset) => (
                     <textPath
                       href="#mobile-wheel-label-path"
-                      key={`wheel-label-separator-${repeatIndex}`}
-                      startOffset={`${25 + repeatIndex * 33.333}%`}
+                      key={`wheel-label-separator-${offset}`}
+                      startOffset={`${offset}%`}
                       textAnchor="middle"
                     >
                       ◆

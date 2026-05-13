@@ -1055,9 +1055,9 @@ a {
     height: 100%;
     fill: #111314;
     font-family: Rockwell, "Rockwell Extra Bold", "Cooper Black", Georgia, "Times New Roman", serif;
-    font-size: 5.75px;
+    font-size: 5.95px;
     font-weight: 1000;
-    letter-spacing: 0.075em;
+    letter-spacing: 0.09em;
     opacity: 0;
     overflow: visible;
     paint-order: stroke fill;
@@ -1074,8 +1074,8 @@ a {
   }
 
   .mobile-wheel-label.is-long {
-    font-size: 4.45px;
-    letter-spacing: 0.045em;
+    font-size: 4.35px;
+    letter-spacing: 0.035em;
     stroke-width: 0.22px;
   }
 
@@ -1084,10 +1084,12 @@ a {
   }
 
   .mobile-wheel-label-copy {
+    dominant-baseline: middle;
     text-anchor: middle;
   }
 
   .mobile-wheel-label-separators {
+    dominant-baseline: middle;
     font-size: 0.72em;
     text-anchor: middle;
   }
