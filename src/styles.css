@@ -1037,7 +1037,7 @@ a {
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    transform: rotate(var(--mobile-wheel-rotation)) scale(1.36);
+    transform: rotate(var(--mobile-wheel-rotation));
     transition: transform 180ms ease-out;
   }
 
