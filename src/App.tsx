@@ -359,7 +359,7 @@ function interpolateRoute(stopProgress: number) {
 }
 
 function createWheelLabelGlyphs(label: string): WheelLabelGlyph[] {
-  const radius = 30;
+  const radius = 29.2;
   const segmentCenters = [5, 125, 245];
   const span = label.length > 10 ? 108 : 82;
   const text = `${label} ${wheelLabelSeparator}`;
