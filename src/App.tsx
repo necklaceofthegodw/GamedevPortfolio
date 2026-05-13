@@ -857,7 +857,7 @@ function App() {
               return (
                 <section className="mobile-showcase-panel" key={`mobile-stop-${stopIndex}`}>
                   <article className={`mobile-showcase-card ${mobileSection.id === "cv" ? "is-cv" : ""}`}>
-                    <div className={`mobile-content-container ${mobilePanel.media ? "" : "is-text-only"}`}>
+                    <div className={`mobile-content-container ${mobilePanel.media ? "has-media" : "is-text-only"}`}>
                       <div className="mobile-content-top">
                         {mobilePanel.media ? (
                           <div className="mobile-media-block">

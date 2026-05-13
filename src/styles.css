@@ -885,6 +885,7 @@ a {
       linear-gradient(90deg, rgba(6, 6, 6, 0.8), rgba(34, 38, 38, 0.46) 52%, rgba(5, 6, 7, 0.9)),
       linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.72));
     overflow: visible;
+    touch-action: pan-y;
   }
 
   .mobile-showcase-stack {
@@ -900,6 +901,7 @@ a {
     align-items: center;
     scroll-snap-align: start;
     scroll-snap-stop: always;
+    touch-action: pan-y;
   }
 
   .mobile-showcase-card {
@@ -926,7 +928,13 @@ a {
     box-shadow:
       0 0.75rem 2.1rem rgba(0, 0, 0, 0.5);
     color: var(--text);
-    pointer-events: auto;
+    pointer-events: none;
+  }
+
+  .mobile-content-container.has-media {
+    width: calc(100vw - 1.2rem);
+    max-height: calc(100svh - 6.5rem - env(safe-area-inset-bottom));
+    padding: 0.6rem;
   }
 
   .mobile-content-top {
@@ -936,8 +944,8 @@ a {
 
   .mobile-media-block {
     position: relative;
-    width: min(74vw, 18.8rem);
-    aspect-ratio: 1.46;
+    width: 100%;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
     background: rgba(4, 7, 8, 0.54);
   }
@@ -1086,6 +1094,7 @@ a {
     flex-wrap: wrap;
     gap: 0.42rem;
     margin-top: auto;
+    pointer-events: auto;
   }
 
   .mobile-panel-action {
@@ -1101,6 +1110,7 @@ a {
     color: var(--orange-hot);
     font-size: 0.68rem;
     font-weight: 900;
+    pointer-events: auto;
   }
 
   .mobile-cv-scroll {
@@ -1176,6 +1186,7 @@ a {
     padding: 0.3rem;
     background: rgba(4, 7, 8, 0.78);
     box-shadow: 0 0.85rem 2.4rem rgba(0, 0, 0, 0.46);
+    pointer-events: auto;
   }
 
   .mobile-bottom-nav button {
