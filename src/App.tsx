@@ -14,6 +14,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const backgroundUrl = "/backgrounds/halfpipe-bg-04-skate-neon.png";
 const musicUrl = "/OPM%20Heaven%20Is%20a%20Halfpipe.mp3";
+const wheelLabelFadeMs = 190;
 const pathD =
   "M 180 375 C 178 560, 260 735, 436.5 827 C 590 907, 794 942, 980 940 C 1168 938, 1388 905, 1540.4 822.4 C 1690 741, 1735 555, 1733.5 384.5";
 
@@ -26,6 +27,14 @@ const sectionRoutePositions = {
   cv: 0.7743726596881803,
   contact: 1,
 } satisfies Record<SectionId, number>;
+
+const wheelSectionLabels = {
+  about: "ABOUT",
+  projects: "PROJECTS",
+  features: "FEATURES",
+  cv: "CURRICULUM VITAE",
+  contact: "CONTACT",
+} satisfies Record<SectionId, string>;
 
 type Section = {
   id: SectionId;
@@ -360,6 +369,9 @@ function App() {
   const activeSection = sections.find((section) => section.id === activeStop.sectionId) ?? sections[0];
   const activePanel = panelContent[activeSection.id][activeStop.panelIndex] ?? panelContent[activeSection.id][0];
   const activePanelCount = panelContent[activeSection.id].length;
+  const activeWheelLabel = wheelSectionLabels[activeSection.id];
+  const [displayedWheelLabel, setDisplayedWheelLabel] = useState(activeWheelLabel);
+  const [isWheelLabelVisible, setIsWheelLabelVisible] = useState(true);
 
   const updateTargetProgress = useCallback(() => {
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
@@ -426,6 +438,22 @@ function App() {
       window.removeEventListener("wheel", startMusicOnInteraction);
     };
   }, [playMusic]);
+
+  useEffect(() => {
+    if (displayedWheelLabel === activeWheelLabel) {
+      setIsWheelLabelVisible(true);
+      return;
+    }
+
+    setIsWheelLabelVisible(false);
+
+    const swapTimeout = window.setTimeout(() => {
+      setDisplayedWheelLabel(activeWheelLabel);
+      window.requestAnimationFrame(() => setIsWheelLabelVisible(true));
+    }, wheelLabelFadeMs);
+
+    return () => window.clearTimeout(swapTimeout);
+  }, [activeWheelLabel, displayedWheelLabel]);
 
   useEffect(() => {
     updateTargetProgress();
@@ -543,6 +571,9 @@ function App() {
     return `${String(activeStop.panelIndex + 1).padStart(2, "0")} / ${String(activePanelCount).padStart(2, "0")}`;
   }, [activePanelCount, activeStop.panelIndex]);
   const mobileWheelProgress = clamp(motion.scrollProgress, 0, 1);
+  const wheelLabelClassName = `mobile-wheel-label ${isWheelLabelVisible ? "is-visible" : ""} ${
+    displayedWheelLabel.length > 10 ? "is-long" : ""
+  }`;
 
   return (
     <main
@@ -846,7 +877,31 @@ function App() {
             className="mobile-wheel-control"
             aria-hidden="true"
           >
-            <img className="mobile-wheel-image" src="/backgrounds/skate_wheel_scroll.png" alt="" draggable="false" />
+            <div className="mobile-wheel-rotor">
+              <img className="mobile-wheel-image" src="/backgrounds/skate_wheel_scroll.png" alt="" draggable="false" />
+              <svg className={wheelLabelClassName} viewBox="0 0 100 100" focusable="false">
+                <defs>
+                  <path
+                    id="mobile-wheel-label-path"
+                    d="M 50 15.5 A 34.5 34.5 0 1 1 49.9 15.5 A 34.5 34.5 0 1 1 50 15.5"
+                  />
+                </defs>
+                <text>
+                  {[0, 1, 2].map((repeatIndex) => (
+                    <textPath
+                      href="#mobile-wheel-label-path"
+                      key={`wheel-label-${repeatIndex}`}
+                      startOffset={`${repeatIndex * 33.333}%`}
+                    >
+                      {displayedWheelLabel}
+                      <tspan className="mobile-wheel-label-separator" dx="2.2">
+                        ◆
+                      </tspan>
+                    </textPath>
+                  ))}
+                </text>
+              </svg>
+            </div>
           </div>
 
           <div className="mobile-showcase-stack">
