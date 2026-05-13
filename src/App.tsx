@@ -883,20 +883,30 @@ function App() {
                 <defs>
                   <path
                     id="mobile-wheel-label-path"
-                    d="M 50 15.5 A 34.5 34.5 0 1 1 49.9 15.5 A 34.5 34.5 0 1 1 50 15.5"
+                    d="M 50 18.35 A 31.65 31.65 0 1 1 49.9 18.35 A 31.65 31.65 0 1 1 50 18.35"
                   />
                 </defs>
-                <text>
+                <text className="mobile-wheel-label-copy">
                   {[0, 1, 2].map((repeatIndex) => (
                     <textPath
                       href="#mobile-wheel-label-path"
                       key={`wheel-label-${repeatIndex}`}
-                      startOffset={`${repeatIndex * 33.333}%`}
+                      startOffset={`${8.333 + repeatIndex * 33.333}%`}
+                      textAnchor="middle"
                     >
                       {displayedWheelLabel}
-                      <tspan className="mobile-wheel-label-separator" dx="2.2">
-                        ◆
-                      </tspan>
+                    </textPath>
+                  ))}
+                </text>
+                <text className="mobile-wheel-label-separators">
+                  {[0, 1, 2].map((repeatIndex) => (
+                    <textPath
+                      href="#mobile-wheel-label-path"
+                      key={`wheel-label-separator-${repeatIndex}`}
+                      startOffset={`${25 + repeatIndex * 33.333}%`}
+                      textAnchor="middle"
+                    >
+                      ◆
                     </textPath>
                   ))}
                 </text>
