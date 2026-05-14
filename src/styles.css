@@ -899,25 +899,9 @@ a {
     padding: max(1.9rem, calc(env(safe-area-inset-top) + 1.25rem)) 0.9rem
       calc(4.85rem + env(safe-area-inset-bottom));
     align-items: center;
-    background-position: center;
-    background-size: cover;
     scroll-snap-align: start;
     scroll-snap-stop: always;
     touch-action: pan-y;
-  }
-
-  .mobile-section-about {
-    background-image:
-      linear-gradient(90deg, rgba(6, 6, 6, 0.2), rgba(5, 6, 7, 0.62)),
-      linear-gradient(180deg, rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0.66)),
-      url("/about/project-triptych-bg.png");
-  }
-
-  .mobile-section-contact {
-    background-image:
-      linear-gradient(90deg, rgba(6, 6, 6, 0.2), rgba(5, 6, 7, 0.62)),
-      linear-gradient(180deg, rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0.66)),
-      url("/about/feature-triptych-bg.png");
   }
 
   .mobile-showcase-card {
@@ -975,7 +959,25 @@ a {
       radial-gradient(circle at 16% 16%, rgba(255, 208, 138, 0.22), transparent 5rem),
       linear-gradient(135deg, rgba(102, 217, 232, 0.12), transparent 42%),
       linear-gradient(180deg, rgba(41, 39, 34, 0.98), rgba(13, 16, 15, 0.97));
+    background-position: center;
+    background-size: cover;
     padding: 0.95rem;
+  }
+
+  .mobile-section-about .mobile-content-container.is-text-only .mobile-content-top {
+    background:
+      linear-gradient(180deg, rgba(4, 7, 8, 0.18), rgba(4, 7, 8, 0.74)),
+      url("/about/project-triptych.png");
+    background-position: center;
+    background-size: cover;
+  }
+
+  .mobile-section-contact .mobile-content-container.is-text-only .mobile-content-top {
+    background:
+      linear-gradient(180deg, rgba(4, 7, 8, 0.14), rgba(4, 7, 8, 0.76)),
+      url("/about/feature-triptych-bg.png");
+    background-position: center;
+    background-size: cover;
   }
 
   .mobile-media-block a,
