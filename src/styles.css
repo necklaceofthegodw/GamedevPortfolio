@@ -899,9 +899,25 @@ a {
     padding: max(1.9rem, calc(env(safe-area-inset-top) + 1.25rem)) 0.9rem
       calc(4.85rem + env(safe-area-inset-bottom));
     align-items: center;
+    background-position: center;
+    background-size: cover;
     scroll-snap-align: start;
     scroll-snap-stop: always;
     touch-action: pan-y;
+  }
+
+  .mobile-section-about {
+    background-image:
+      linear-gradient(90deg, rgba(6, 6, 6, 0.2), rgba(5, 6, 7, 0.62)),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0.66)),
+      url("/about/project-triptych-bg.png");
+  }
+
+  .mobile-section-contact {
+    background-image:
+      linear-gradient(90deg, rgba(6, 6, 6, 0.2), rgba(5, 6, 7, 0.62)),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0.66)),
+      url("/about/feature-triptych-bg.png");
   }
 
   .mobile-showcase-card {
@@ -1127,7 +1143,7 @@ a {
 
   .mobile-chip-grid span {
     border: 1px solid rgba(255, 248, 233, 0.14);
-    border-radius: 50%;
+    border-radius: 0.28rem;
     padding: 0.28rem 0.44rem;
     background: rgba(255, 248, 233, 0.07);
     color: rgba(255, 248, 233, 0.9);

@@ -29,7 +29,7 @@ const sectionRoutePositions = {
 } satisfies Record<SectionId, number>;
 
 const wheelSectionLabels = {
-  about: "ABOUT",
+  about: "ABOUT ME",
   projects: "PROJECTS",
   features: "FEATURES",
   cv: "CURRICULUM VITAE",
@@ -942,7 +942,10 @@ function App() {
               const mobilePanel = panelContent[mobileSection.id][stop.panelIndex] ?? panelContent[mobileSection.id][0];
 
               return (
-                <section className="mobile-showcase-panel" key={`mobile-stop-${stopIndex}`}>
+                <section
+                  className={`mobile-showcase-panel mobile-section-${mobileSection.id}`}
+                  key={`mobile-stop-${stopIndex}`}
+                >
                   <article className={`mobile-showcase-card ${mobileSection.id === "cv" ? "is-cv" : ""}`}>
                     <div className={`mobile-content-container ${mobilePanel.media ? "has-media" : "is-text-only"}`}>
                       <div className="mobile-content-top">
