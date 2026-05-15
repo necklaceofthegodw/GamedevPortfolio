@@ -871,6 +871,7 @@ a {
   .route-svg,
   .marker-svg,
   .content-card,
+  .content-card.has-media,
   .scroll-hint,
   .social-links {
     display: none;
@@ -895,7 +896,9 @@ a {
 
   .mobile-showcase-panel {
     display: grid;
+    height: 100svh;
     min-height: 100svh;
+    overflow: hidden;
     padding: max(1.9rem, calc(env(safe-area-inset-top) + 1.25rem)) 0.9rem
       calc(4.85rem + env(safe-area-inset-bottom));
     align-items: start;
