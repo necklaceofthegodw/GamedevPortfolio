@@ -943,7 +943,7 @@ function App() {
 
               return (
                 <section
-                  className={`mobile-showcase-panel mobile-section-${mobileSection.id}`}
+                  className={`mobile-showcase-panel mobile-section-${mobileSection.id} mobile-panel-${mobileSection.id}-${stop.panelIndex}`}
                   key={`mobile-stop-${stopIndex}`}
                 >
                   <article className={`mobile-showcase-card ${mobileSection.id === "cv" ? "is-cv" : ""}`}>

@@ -945,6 +945,11 @@ a {
     aspect-ratio: auto;
   }
 
+  .mobile-section-cv .mobile-content-container {
+    height: calc(100svh - 7.2rem - env(safe-area-inset-bottom));
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
   .mobile-content-top {
     display: grid;
     gap: 0.7rem;
@@ -1045,6 +1050,14 @@ a {
 
   .mobile-section-projects .mobile-media-copy {
     width: min(10.8rem, 42vw);
+  }
+
+  .mobile-panel-projects-1 .mobile-media-copy {
+    width: min(12.8rem, 50vw);
+  }
+
+  .mobile-panel-projects-2 .mobile-media-copy {
+    width: min(10.2rem, 40vw);
   }
 
   .mobile-media-heading {
@@ -1190,6 +1203,16 @@ a {
     line-height: 1.35;
   }
 
+  .mobile-panel-projects-1 .mobile-media-copy .mobile-content-body p {
+    font-size: clamp(0.72rem, 3.15vw, 0.84rem);
+    line-height: 1.28;
+  }
+
+  .mobile-panel-projects-2 .mobile-media-copy .mobile-content-body p {
+    font-size: clamp(0.76rem, 3.3vw, 0.88rem);
+    line-height: 1.34;
+  }
+
   .mobile-chip-grid {
     display: flex;
     flex-wrap: wrap;
@@ -1247,9 +1270,10 @@ a {
     display: grid;
     min-height: 0;
     gap: 0.72rem;
-    overflow-y: hidden;
+    overflow-y: auto;
     padding-right: 0.18rem;
     overscroll-behavior: contain;
+    pointer-events: auto;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 154, 46, 0.64) rgba(255, 248, 233, 0.08);
   }
