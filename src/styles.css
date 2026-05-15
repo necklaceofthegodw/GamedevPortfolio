@@ -964,6 +964,8 @@ a {
     aspect-ratio: 16 / 9;
     overflow: hidden;
     background: rgba(4, 7, 8, 0.54);
+    pointer-events: auto;
+    touch-action: manipulation;
   }
 
   .mobile-content-container.is-text-only .mobile-content-top {
@@ -1002,6 +1004,7 @@ a {
     display: block;
     width: 100%;
     height: 100%;
+    pointer-events: auto;
   }
 
   .mobile-media-block img,
@@ -1042,6 +1045,7 @@ a {
   .mobile-block-heading h1 a,
   .mobile-media-heading h1 a {
     color: inherit;
+    pointer-events: auto;
   }
 
   .mobile-media-copy {
