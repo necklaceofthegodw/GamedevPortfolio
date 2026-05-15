@@ -293,7 +293,7 @@ const panelContent: Record<SectionId, Panel[]> = {
       eyebrow: "Feature reel",
       title: "Inventory system",
       body: "A scroll-through inventory system divided into four sections depending on the item type.",
-      stats: [],
+      stats: ["Inventory", "UI", "Systems"],
       media: {
         kind: "video",
         src: "/features/oddyssey_inventory.mp4",
@@ -304,7 +304,7 @@ const panelContent: Record<SectionId, Panel[]> = {
       eyebrow: "Feature reel",
       title: "Atom model",
       body: "A tool that generates atom models from a chemical formula, automatically creating electron shells, positioning electrons, and arranging protons and neutrons in a sphere.",
-      stats: [],
+      stats: ["Chemistry", "Tools", "VR"],
       media: {
         kind: "video",
         src: "/features/chemia_model_atomu.mp4",
@@ -315,7 +315,7 @@ const panelContent: Record<SectionId, Panel[]> = {
       eyebrow: "Feature reel",
       title: "Fetching Ball",
       body: "In PetsVR, you play with a little puppy and take care of his needs. For this interaction, you throw a ball and he brings it back to you.",
-      stats: [],
+      stats: ["VR", "Interaction", "Gameplay"],
       media: {
         kind: "video",
         src: "/features/PetsVR_FetchingBall.mp4",
@@ -1037,22 +1037,57 @@ function App() {
                         </div>
                       ) : (
                         <>
-                        {mobilePanel.body ? (
-                          <div className="mobile-content-body">
-                            <span className="mobile-wheel-text-wrap" aria-hidden="true" />
-                            {mobilePanel.body.split("\n\n").map((paragraph) => (
-                              <p key={paragraph}>{paragraph}</p>
-                            ))}
-                          </div>
-                        ) : null}
+                        {mobilePanel.media ? (
+                          <div className="mobile-media-copy">
+                            <div className="mobile-media-heading">
+                              <h1>
+                                {mobilePanel.href ? (
+                                  <a href={mobilePanel.href} target="_blank" rel="noreferrer">
+                                    {mobilePanel.title}
+                                  </a>
+                                ) : (
+                                  mobilePanel.title
+                                )}
+                              </h1>
+                            </div>
 
-                        {mobilePanel.stats.length > 0 && mobileSection.id !== "contact" ? (
-                          <div className="mobile-chip-grid">
-                            {mobilePanel.stats.map((stat) => (
-                              <span key={stat}>{stat}</span>
-                            ))}
+                            {mobilePanel.body ? (
+                              <div className="mobile-content-body">
+                                <span className="mobile-wheel-text-wrap" aria-hidden="true" />
+                                {mobilePanel.body.split("\n\n").map((paragraph) => (
+                                  <p key={paragraph}>{paragraph}</p>
+                                ))}
+                              </div>
+                            ) : null}
+
+                            {mobilePanel.stats.length > 0 && mobileSection.id !== "contact" ? (
+                              <div className="mobile-chip-grid">
+                                {mobilePanel.stats.map((stat) => (
+                                  <span key={stat}>{stat}</span>
+                                ))}
+                              </div>
+                            ) : null}
                           </div>
-                        ) : null}
+                        ) : (
+                          <>
+                            {mobilePanel.body ? (
+                              <div className="mobile-content-body">
+                                <span className="mobile-wheel-text-wrap" aria-hidden="true" />
+                                {mobilePanel.body.split("\n\n").map((paragraph) => (
+                                  <p key={paragraph}>{paragraph}</p>
+                                ))}
+                              </div>
+                            ) : null}
+
+                            {mobilePanel.stats.length > 0 && mobileSection.id !== "contact" ? (
+                              <div className="mobile-chip-grid">
+                                {mobilePanel.stats.map((stat) => (
+                                  <span key={stat}>{stat}</span>
+                                ))}
+                              </div>
+                            ) : null}
+                          </>
+                        )}
 
                         {mobileSection.id === "contact" ? (
                           <div className="mobile-action-row">

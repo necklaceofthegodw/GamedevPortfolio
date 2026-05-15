@@ -898,7 +898,7 @@ a {
     min-height: 100svh;
     padding: max(1.9rem, calc(env(safe-area-inset-top) + 1.25rem)) 0.9rem
       calc(4.85rem + env(safe-area-inset-bottom));
-    align-items: center;
+    align-items: start;
     scroll-snap-align: start;
     scroll-snap-stop: always;
     touch-action: pan-y;
@@ -907,7 +907,7 @@ a {
   .mobile-showcase-card {
     display: grid;
     min-height: calc(100svh - 6.75rem - env(safe-area-inset-bottom));
-    align-content: center;
+    align-content: start;
     pointer-events: none;
   }
 
@@ -934,7 +934,9 @@ a {
   .mobile-content-container.has-media {
     width: calc(100vw - 1.2rem);
     max-height: calc(100svh - 6.5rem - env(safe-area-inset-bottom));
-    padding: 0.6rem;
+    align-content: start;
+    gap: clamp(1.15rem, 3.2svh, 1.65rem);
+    padding: 0.6rem 0.6rem clamp(1.2rem, 3.2svh, 1.7rem);
   }
 
   .mobile-content-top {
@@ -1013,7 +1015,8 @@ a {
   }
 
   .mobile-media-block h1,
-  .mobile-block-heading h1 {
+  .mobile-block-heading h1,
+  .mobile-media-heading h1 {
     margin: 0;
     color: var(--text);
     font-size: clamp(1.14rem, 6.2vw, 1.78rem);
@@ -1022,14 +1025,43 @@ a {
   }
 
   .mobile-media-block h1 a,
-  .mobile-block-heading h1 a {
+  .mobile-block-heading h1 a,
+  .mobile-media-heading h1 a {
     color: inherit;
+  }
+
+  .mobile-media-copy {
+    display: grid;
+    width: min(12.4rem, 48vw);
+    gap: 0.7rem;
+    padding-left: clamp(0.1rem, 2vw, 0.55rem);
+  }
+
+  .mobile-media-heading {
+    display: grid;
+    gap: 0.52rem;
+  }
+
+  .mobile-media-heading::after {
+    width: min(8.9rem, 44vw);
+    height: 2px;
+    background: linear-gradient(90deg, var(--orange), rgba(255, 154, 46, 0.15));
+    content: "";
+  }
+
+  .mobile-media-heading h1 {
+    color: var(--orange-hot);
+    font-size: clamp(1.24rem, 6.8vw, 1.86rem);
+    font-weight: 1000;
+    letter-spacing: 0.08em;
+    line-height: 1.13;
+    text-transform: uppercase;
   }
 
   .mobile-wheel-control {
     position: fixed;
-    top: 50%;
-    right: -5rem;
+    top: 58%;
+    right: clamp(-7.4rem, -32vw, -6.8rem);
     z-index: 4;
     display: grid;
     width: clamp(13.8rem, 70vw, 17.6rem);
@@ -1124,6 +1156,10 @@ a {
     shape-outside: circle(66% at 100% 45%);
   }
 
+  .mobile-content-container.has-media .mobile-wheel-text-wrap {
+    display: none;
+  }
+
   .mobile-content-body p {
     margin: 0;
     margin-bottom: 0.62rem;
@@ -1141,6 +1177,14 @@ a {
 
   .mobile-content-container > .mobile-chip-grid {
     max-width: min(15rem, 58vw);
+  }
+
+  .mobile-content-container.has-media > .mobile-chip-grid {
+    max-width: min(13.6rem, 54vw);
+  }
+
+  .mobile-media-copy .mobile-chip-grid {
+    max-width: none;
   }
 
   .mobile-chip-grid span {
