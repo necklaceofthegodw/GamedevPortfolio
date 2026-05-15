@@ -948,93 +948,99 @@ function App() {
                 >
                   <article className={`mobile-showcase-card ${mobileSection.id === "cv" ? "is-cv" : ""}`}>
                     <div className={`mobile-content-container ${mobilePanel.media ? "has-media" : "is-text-only"}`}>
-                      <div className="mobile-content-top">
-                        {mobilePanel.media ? (
-                          <div className="mobile-media-block">
-                            <span className="mobile-media-badge">{mobilePanel.title}</span>
-                            {mobilePanel.media.kind === "image" ? (
-                              mobilePanel.href ? (
-                                <a href={mobilePanel.href} target="_blank" rel="noreferrer" aria-label={`Open ${mobilePanel.title}`}>
+                      {mobileSection.id !== "cv" ? (
+                        <div className="mobile-content-top">
+                          {mobilePanel.media ? (
+                            <div className="mobile-media-block">
+                              <span className="mobile-media-badge">{mobilePanel.title}</span>
+                              {mobilePanel.media.kind === "image" ? (
+                                mobilePanel.href ? (
+                                  <a href={mobilePanel.href} target="_blank" rel="noreferrer" aria-label={`Open ${mobilePanel.title}`}>
+                                    <img src={mobilePanel.media.src} alt={mobilePanel.media.alt} />
+                                  </a>
+                                ) : (
                                   <img src={mobilePanel.media.src} alt={mobilePanel.media.alt} />
-                                </a>
+                                )
                               ) : (
-                                <img src={mobilePanel.media.src} alt={mobilePanel.media.alt} />
-                              )
-                            ) : (
-                              <video
-                                aria-label={mobilePanel.media.label}
-                                controls
-                                loop
-                                muted
-                                playsInline
-                                preload="metadata"
-                                src={mobilePanel.media.src}
-                              />
-                            )}
-                          </div>
-                        ) : null}
-
-                        {!mobilePanel.media ? (
-                          <div className="mobile-block-heading">
-                            <h1>
-                              {mobilePanel.href ? (
-                                <a href={mobilePanel.href} target="_blank" rel="noreferrer">
-                                  {mobilePanel.title}
-                                </a>
-                              ) : (
-                                mobilePanel.title
+                                <video
+                                  aria-label={mobilePanel.media.label}
+                                  controls
+                                  loop
+                                  muted
+                                  playsInline
+                                  preload="metadata"
+                                  src={mobilePanel.media.src}
+                                />
                               )}
-                            </h1>
-                          </div>
-                        ) : null}
-                      </div>
+                            </div>
+                          ) : null}
+
+                          {!mobilePanel.media ? (
+                            <div className="mobile-block-heading">
+                              <h1>
+                                {mobilePanel.href ? (
+                                  <a href={mobilePanel.href} target="_blank" rel="noreferrer">
+                                    {mobilePanel.title}
+                                  </a>
+                                ) : (
+                                  mobilePanel.title
+                                )}
+                              </h1>
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : null}
 
                       {mobileSection.id === "cv" ? (
-                        <div className="mobile-cv-scroll" tabIndex={0}>
-                          <section className="mobile-cv-section">
-                            <h2>Professional Experience</h2>
-                            <div className="mobile-cv-timeline">
-                              {cvExperience.map((item) => (
-                                <article className="mobile-cv-entry" key={`${item.date}-${item.title}`}>
-                                  <time>{item.date}</time>
-                                  <h3>{item.title}</h3>
-                                  <p>{item.detail}</p>
-                                </article>
-                              ))}
-                            </div>
-                          </section>
+                        <>
+                          <div className="mobile-cv-heading">
+                            <h1>CURRICULUM VITAE</h1>
+                          </div>
+                          <div className="mobile-cv-scroll" tabIndex={0}>
+                            <section className="mobile-cv-section">
+                              <div className="mobile-cv-timeline">
+                                {cvExperience.map((item) => (
+                                  <article className="mobile-cv-entry" key={`${item.date}-${item.title}`}>
+                                    <time>{item.date}</time>
+                                    <h3>{item.title}</h3>
+                                    <p>{item.detail}</p>
+                                  </article>
+                                ))}
+                              </div>
+                            </section>
 
-                          <section className="mobile-cv-section">
-                            <h2>Education</h2>
-                            <div className="mobile-cv-timeline">
-                              {cvEducation.map((item) => (
-                                <article className="mobile-cv-entry" key={`${item.date}-${item.title}`}>
-                                  <time>{item.date}</time>
-                                  <h3>{item.title}</h3>
-                                  <p>{item.detail}</p>
-                                </article>
-                              ))}
-                            </div>
-                          </section>
+                            <section className="mobile-cv-section">
+                              <h2>Education</h2>
+                              <div className="mobile-cv-timeline">
+                                {cvEducation.map((item) => (
+                                  <article className="mobile-cv-entry" key={`${item.date}-${item.title}`}>
+                                    <time>{item.date}</time>
+                                    <h3>{item.title}</h3>
+                                    <p>{item.detail}</p>
+                                  </article>
+                                ))}
+                              </div>
+                            </section>
 
-                          <section className="mobile-cv-section">
-                            <h2>Skills</h2>
-                            <div className="mobile-chip-grid">
-                              {cvSkills.map((skill) => (
-                                <span key={skill}>{skill}</span>
-                              ))}
-                            </div>
-                          </section>
+                            <section className="mobile-cv-section">
+                              <h2>Skills</h2>
+                              <div className="mobile-chip-grid">
+                                {cvSkills.map((skill) => (
+                                  <span key={skill}>{skill}</span>
+                                ))}
+                              </div>
+                            </section>
 
-                          <section className="mobile-cv-section">
-                            <h2>Languages & Hobbies</h2>
-                            <div className="mobile-chip-grid">
-                              {[...cvLanguages, ...cvHobbies].map((item) => (
-                                <span key={item}>{item}</span>
-                              ))}
-                            </div>
-                          </section>
-                        </div>
+                            <section className="mobile-cv-section">
+                              <h2>Languages & Hobbies</h2>
+                              <div className="mobile-chip-grid">
+                                {[...cvLanguages, ...cvHobbies].map((item) => (
+                                  <span key={item}>{item}</span>
+                                ))}
+                              </div>
+                            </section>
+                          </div>
+                        </>
                       ) : (
                         <>
                         {mobilePanel.media ? (
