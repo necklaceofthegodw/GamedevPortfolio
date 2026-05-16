@@ -170,6 +170,7 @@ type Panel = {
   body?: string;
   stats: string[];
   media?: PanelMedia;
+  mobileMedia?: PanelMedia;
   href?: string;
 };
 
@@ -248,6 +249,11 @@ const panelContent: Record<SectionId, Panel[]> = {
       title: "Hello :)",
       body: "My name is Zbyszek and I'm a game developer. I started my journey with professional game development in 2019. Since then, I've gained a lot of experience implementing gameplay systems and UI elements. The thing I enjoy most in programming games is that every day I learn something new.\n\nAfter a hard day of solving bugs and thinking through problems, I like to clear my head by focusing on my hobbies: skateboarding, snowboarding, and obstacle course racing.",
       stats: ["Gameplay systems", "UI elements", "Game developer since 2019"],
+      mobileMedia: {
+        kind: "image",
+        src: "/backgrounds/halfpipe-bg-04-skate-neon.png",
+        alt: "Neon skate halfpipe artwork",
+      },
     },
   ],
   projects: [
@@ -337,6 +343,11 @@ const panelContent: Record<SectionId, Panel[]> = {
       title: "Let’s build something together.",
       body: "Reach out for polished gameplay code, UI implementation, tools, prototypes, or thoughtful game-feel work.",
       stats: ["LinkedIn", "Email", "Portfolio"],
+      mobileMedia: {
+        kind: "image",
+        src: "/about/feature-triptych-bg.png",
+        alt: "Gameplay feature collage",
+      },
     },
   ],
 };
@@ -940,6 +951,7 @@ function App() {
             {scrollStops.map((stop, stopIndex) => {
               const mobileSection = sections.find((section) => section.id === stop.sectionId) ?? sections[0];
               const mobilePanel = panelContent[mobileSection.id][stop.panelIndex] ?? panelContent[mobileSection.id][0];
+              const mobilePanelMedia = mobilePanel.media ?? mobilePanel.mobileMedia;
 
               return (
                 <section
@@ -947,35 +959,35 @@ function App() {
                   key={`mobile-stop-${stopIndex}`}
                 >
                   <article className={`mobile-showcase-card ${mobileSection.id === "cv" ? "is-cv" : ""}`}>
-                    <div className={`mobile-content-container ${mobilePanel.media ? "has-media" : "is-text-only"}`}>
+                    <div className={`mobile-content-container ${mobilePanelMedia ? "has-media" : "is-text-only"}`}>
                       {mobileSection.id !== "cv" ? (
                         <div className="mobile-content-top">
-                          {mobilePanel.media ? (
+                          {mobilePanelMedia ? (
                             <div className="mobile-media-block">
                               <span className="mobile-media-badge">{mobilePanel.title}</span>
-                              {mobilePanel.media.kind === "image" ? (
+                              {mobilePanelMedia.kind === "image" ? (
                                 mobilePanel.href ? (
                                   <a href={mobilePanel.href} target="_blank" rel="noreferrer" aria-label={`Open ${mobilePanel.title}`}>
-                                    <img src={mobilePanel.media.src} alt={mobilePanel.media.alt} />
+                                    <img src={mobilePanelMedia.src} alt={mobilePanelMedia.alt} />
                                   </a>
                                 ) : (
-                                  <img src={mobilePanel.media.src} alt={mobilePanel.media.alt} />
+                                  <img src={mobilePanelMedia.src} alt={mobilePanelMedia.alt} />
                                 )
                               ) : (
                                 <video
-                                  aria-label={mobilePanel.media.label}
+                                  aria-label={mobilePanelMedia.label}
                                   controls
                                   loop
                                   muted
                                   playsInline
                                   preload="metadata"
-                                  src={mobilePanel.media.src}
+                                  src={mobilePanelMedia.src}
                                 />
                               )}
                             </div>
                           ) : null}
 
-                          {!mobilePanel.media ? (
+                          {!mobilePanelMedia ? (
                             <div className="mobile-block-heading">
                               <h1>
                                 {mobilePanel.href ? (
@@ -1043,7 +1055,7 @@ function App() {
                         </>
                       ) : (
                         <>
-                        {mobilePanel.media ? (
+                        {mobilePanelMedia ? (
                           <div className="mobile-media-copy">
                             <div className="mobile-media-heading">
                               <h1>

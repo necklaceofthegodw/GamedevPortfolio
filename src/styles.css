@@ -1031,6 +1031,11 @@ a {
     text-transform: uppercase;
   }
 
+  .mobile-section-about .mobile-media-badge,
+  .mobile-section-contact .mobile-media-badge {
+    display: none;
+  }
+
   .mobile-media-block h1,
   .mobile-block-heading h1,
   .mobile-media-heading h1 {
@@ -1055,7 +1060,9 @@ a {
     padding-left: clamp(0.1rem, 2vw, 0.55rem);
   }
 
-  .mobile-section-projects .mobile-media-copy {
+  .mobile-section-about .mobile-media-copy,
+  .mobile-section-projects .mobile-media-copy,
+  .mobile-section-contact .mobile-media-copy {
     width: clamp(10rem, calc(65vw - 2rem), 14rem);
   }
 
@@ -1221,7 +1228,9 @@ a {
     line-height: 1.38;
   }
 
-  .mobile-section-projects .mobile-media-copy .mobile-content-body p {
+  .mobile-section-about .mobile-media-copy .mobile-content-body p,
+  .mobile-section-projects .mobile-media-copy .mobile-content-body p,
+  .mobile-section-contact .mobile-media-copy .mobile-content-body p {
     font-size: clamp(0.78rem, 3.4vw, 0.9rem);
     line-height: 1.35;
   }
