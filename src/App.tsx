@@ -274,7 +274,8 @@ const panelContent: Record<SectionId, Panel[]> = {
       eyebrow: "Project 02",
       title: "The Skyland Chronicles",
       body: "Skyland Chronicles is a third-person pirate roguelike with soulslike combat. My main responsibilities in the project were programming combat abilities using Unreal's Gameplay Ability System. A few examples of abilities I implemented: spawning a clone of a player which then attacks enemies, spawning a big bell which stuns enemies in front, and Gauntlet - a ranged weapon system.",
-      stats: ["Roguelike", "Soulslike combat", "Gameplay Ability System"],
+      stats: [],
+      href: "https://store.steampowered.com/app/2622460/The_Skyland_Chronicles/",
       media: {
         kind: "image",
         src: "/projects/skyland_chronicles.jpg",
@@ -385,29 +386,38 @@ function createWheelLabelGlyphs(label: string): WheelLabelGlyph[] {
   const radius = 29.2;
   const segmentCenters = [5, 125, 245];
   const span = label.length > 10 ? 108 : 82;
-  const text = `${label} ${wheelLabelSeparator}`;
-  const weights = [...text].map((char) => (char === "I" || char === " " ? 0.55 : char === wheelLabelSeparator ? 0.75 : 1));
+  const labelChars = [...label];
+  const weights = labelChars.map((char) => (char === "I" || char === " " ? 0.55 : 1));
   const totalWeight = weights.reduce((total, weight) => total + weight, 0);
+  const createGlyph = (char: string, angle: number, key: string, isSeparator = false) => {
+    const radians = (angle * Math.PI) / 180;
+
+    return {
+      angle,
+      char,
+      isSeparator,
+      x: 50 + Math.sin(radians) * radius,
+      y: 50 - Math.cos(radians) * radius,
+      key,
+    };
+  };
 
   return segmentCenters.flatMap((centerAngle, segmentIndex) => {
     let currentWeight = 0;
 
-    return [...text].map((char, charIndex) => {
+    const labelGlyphs = labelChars.map((char, charIndex) => {
       const weight = weights[charIndex];
       const angle = centerAngle - span / 2 + ((currentWeight + weight / 2) / totalWeight) * span;
-      const radians = (angle * Math.PI) / 180;
 
       currentWeight += weight;
 
-      return {
-        angle,
-        char,
-        isSeparator: char === wheelLabelSeparator,
-        x: 50 + Math.sin(radians) * radius,
-        y: 50 - Math.cos(radians) * radius,
-        key: `${segmentIndex}-${charIndex}`,
-      };
+      return createGlyph(char, angle, `${segmentIndex}-${charIndex}`);
     });
+
+    return [
+      ...labelGlyphs,
+      createGlyph(wheelLabelSeparator, centerAngle + 60, `${segmentIndex}-separator`, true),
+    ];
   });
 }
 
