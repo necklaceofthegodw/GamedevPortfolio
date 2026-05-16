@@ -225,8 +225,9 @@ const sections: Section[] = [
 const scrollStops: ScrollStop[] = [
   { sectionId: "about", panelIndex: 0, routePosition: sectionRoutePositions.about },
   { sectionId: "projects", panelIndex: 0, routePosition: sectionRoutePositions.projects },
-  { sectionId: "projects", panelIndex: 1, routePosition: 0.33 },
-  { sectionId: "projects", panelIndex: 2, routePosition: 0.42 },
+  { sectionId: "projects", panelIndex: 1, routePosition: 0.31 },
+  { sectionId: "projects", panelIndex: 2, routePosition: 0.37 },
+  { sectionId: "projects", panelIndex: 3, routePosition: 0.43 },
   { sectionId: "features", panelIndex: 0, routePosition: sectionRoutePositions.features },
   { sectionId: "features", panelIndex: 1, routePosition: 0.59 },
   { sectionId: "features", panelIndex: 2, routePosition: 0.68 },
@@ -271,6 +272,17 @@ const panelContent: Record<SectionId, Panel[]> = {
     },
     {
       eyebrow: "Project 02",
+      title: "The Skyland Chronicles",
+      body: "Skyland Chronicles is a third-person pirate roguelike with soulslike combat. My main responsibilities in the project were programming combat abilities using Unreal's Gameplay Ability System. A few examples of abilities I implemented: spawning a clone of a player which then attacks enemies, spawning a big bell which stuns enemies in front, and Gauntlet - a ranged weapon system.",
+      stats: ["Roguelike", "Soulslike combat", "Gameplay Ability System"],
+      media: {
+        kind: "image",
+        src: "/projects/skyland_chronicles.jpg",
+        alt: "Skyland Chronicles project artwork",
+      },
+    },
+    {
+      eyebrow: "Project 03",
       title: "Oddyssey",
       body: "Oddyssey is an adventure game designed for single-player and co-op play. The game focuses on space exploration, collecting resources, and taking care of the crew's needs in order to save humanity. The game was published by 505 Games. I worked on it for two years and was responsible for implementing all UI elements according to the design.",
       stats: ["Adventure", "Co-op", "UI implementation"],
@@ -282,7 +294,7 @@ const panelContent: Record<SectionId, Panel[]> = {
       },
     },
     {
-      eyebrow: "Project 03",
+      eyebrow: "Project 04",
       title: "Laboratorium Chemiczne",
       body: "A VR simulation of a school science lab where students can perform different chemical experiments that would be hard to replicate in the real world. This project was developed for Nowa Era book publisher and is used in schools for chemistry lessons.",
       stats: ["VR simulation", "Education", "Chemistry lessons"],
