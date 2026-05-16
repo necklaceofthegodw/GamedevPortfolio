@@ -345,7 +345,7 @@ const panelContent: Record<SectionId, Panel[]> = {
       stats: ["LinkedIn", "Email", "Portfolio"],
       mobileMedia: {
         kind: "image",
-        src: "/about/feature-triptych-bg.png",
+        src: "/contact/portfolio-contact-collage-4-revised.png",
         alt: "Gameplay feature collage",
       },
     },
