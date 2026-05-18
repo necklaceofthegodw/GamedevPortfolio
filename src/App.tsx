@@ -248,7 +248,7 @@ const panelContent: Record<SectionId, Panel[]> = {
     {
       eyebrow: "About me",
       title: "Hello :)",
-      body: "My name is Zbyszek and I'm a game developer. I started my journey with professional game development in 2019. Since then, I've gained a lot of experience implementing gameplay systems and UI elements. The thing I enjoy most in programming games is that every day I learn something new. After a hard day of solving bugs and thinking through problems, I like to clear my head by focusing on my hobbies: skateboarding, snowboarding, and obstacle course racing.",
+      body: "My name is Zbyszek and I'm a game developer. I started my journey with professional game development in 2019. Since then, I've gained a lot of experience implementing gameplay systems and UI elements. The thing I enjoy most in programming games is that every day I learn something new. Outside of programming, skateboarding is my biggest passion. It helps me clear my head, stay creative, and reminds me that progress comes from patience, practice, and persistence.",
       stats: ["Gameplay systems", "UI elements", "Game developer since 2019"],
       mobileMedia: {
         kind: "image",
