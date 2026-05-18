@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Mini neon halfpipe">
+  <defs>
+    <radialGradient id="sky" cx="50%" cy="22%" r="74%">
+      <stop offset="0" stop-color="#193140" />
+      <stop offset="0.55" stop-color="#0a1117" />
+      <stop offset="1" stop-color="#020406" />
+    </radialGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.8" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="64" height="64" rx="10" fill="url(#sky)" />
+  <path d="M9 16v11c0 18 10 29 23 29s23-11 23-29V16" fill="none" stroke="#29323a" stroke-width="8" stroke-linecap="round" />
+  <path d="M12 17v10c0 15.5 8.6 25 20 25s20-9.5 20-25V17" fill="none" stroke="#9ba5a8" stroke-width="3.6" stroke-linecap="round" opacity="0.68" />
+  <path d="M12 17v10c0 15.5 8.6 25 20 25s20-9.5 20-25V17" fill="none" stroke="#ff9a2e" stroke-width="3" stroke-linecap="round" filter="url(#glow)" />
+  <path d="M17 20h6m18 0h6M20 13v8m24-8v8" stroke="#5ee8ff" stroke-width="1.6" stroke-linecap="round" opacity="0.72" />
+  <circle cx="17" cy="10" r="1" fill="#e6f7ff" opacity="0.85" />
+  <circle cx="31" cy="8" r="0.8" fill="#e6f7ff" opacity="0.75" />
+  <circle cx="47" cy="11" r="1.1" fill="#e6f7ff" opacity="0.8" />
+  <circle cx="54" cy="7" r="0.7" fill="#ffcf8a" opacity="0.75" />
+</svg>
