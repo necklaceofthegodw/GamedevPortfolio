@@ -1183,9 +1183,6 @@ function App() {
           >
             {isMusicPlaying ? <Volume2 size={18} /> : <VolumeX size={18} />}
           </button>
-          <a href="#github" onClick={(event) => event.preventDefault()} aria-label="GitHub">
-            <Code2 size={18} />
-          </a>
           <a href={linkedInUrl} target="_blank" rel="noreferrer" aria-label="LinkedIn">
             <BriefcaseBusiness size={18} />
           </a>
