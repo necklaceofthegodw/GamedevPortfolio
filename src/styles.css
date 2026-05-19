@@ -326,7 +326,7 @@ a {
 .content-card {
   position: absolute;
   z-index: 12;
-  top: 42.5%;
+  top: 50%;
   left: 50%;
   width: min(48rem, calc(100vw - 3rem));
   height: clamp(26.4rem, 51.6vh, 30rem);
@@ -866,7 +866,7 @@ a {
   }
 
   .content-card {
-    top: 46%;
+    top: 50%;
     width: min(31rem, calc(100vw - 1.5rem));
     min-height: 15rem;
   }

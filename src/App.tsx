@@ -763,11 +763,11 @@ function App() {
             const objectHeight = section.labelSide === "above" ? 100 : 84;
             const objectX =
               section.labelSide === "left"
-                ? markerPoint.x - objectWidth + 24
+                ? markerPoint.x - objectWidth + 16
                 : section.labelSide === "above"
                   ? markerPoint.x - objectWidth / 2
-                  : markerPoint.x - 26;
-            const objectY = section.labelSide === "above" ? markerPoint.y - 105 : markerPoint.y - 42;
+                  : markerPoint.x - 16;
+            const objectY = section.labelSide === "above" ? markerPoint.y - 53 : markerPoint.y - 42;
 
             return (
               <foreignObject
@@ -785,12 +785,25 @@ function App() {
                   type="button"
                   onClick={() => scrollToStop(sectionStartStops[section.id])}
                 >
-                  <span className="marker-node">
-                    <Icon size={15} aria-hidden="true" />
-                  </span>
-                  <span className="marker-copy">
-                    <small>{section.teaser}</small>
-                  </span>
+                  {section.labelSide === "above" ? (
+                    <>
+                      <span className="marker-copy">
+                        <small>{section.teaser}</small>
+                      </span>
+                      <span className="marker-node">
+                        <Icon size={15} aria-hidden="true" />
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="marker-node">
+                        <Icon size={15} aria-hidden="true" />
+                      </span>
+                      <span className="marker-copy">
+                        <small>{section.teaser}</small>
+                      </span>
+                    </>
+                  )}
                 </button>
               </foreignObject>
             );
