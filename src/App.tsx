@@ -16,7 +16,7 @@ const backgroundUrl = "/backgrounds/halfpipe-bg-04-skate-neon.png";
 const musicUrl = "/OPM%20Heaven%20Is%20a%20Halfpipe.mp3";
 const wheelLabelFadeMs = 190;
 const pathD =
-  "M 180 375 C 178 560, 260 735, 436.5 827 C 590 907, 794 942, 980 940 C 1168 938, 1388 905, 1540.4 822.4 C 1690 741, 1735 555, 1733.5 384.5";
+  "M 180 390 C 184 540, 262 710, 365 798 C 474 896, 616 942, 770 952 C 898 962, 1030 962, 1160 954 C 1306 940, 1440 892, 1544 820 C 1666 706, 1726 532, 1733 384";
 
 type SectionId = "about" | "projects" | "features" | "cv" | "contact";
 
@@ -613,8 +613,8 @@ function App() {
         const normalAngle = ((angle - 90) * Math.PI) / 180;
         const riderOffset = 45;
         const endpointLift =
-          Math.max(0, 1 - routeProgress / 0.14) * 58 +
-          Math.max(0, 1 - (1 - routeProgress) / 0.14) * 58;
+          Math.max(0, 1 - routeProgress / 0.06) * 58 +
+          Math.max(0, 1 - (1 - routeProgress) / 0.06) * 58;
         const activeStopIndex = clamp(Math.round(next * (scrollStops.length - 1)), 0, scrollStops.length - 1);
         const markers = sections.map((section) => {
           const markerPoint = path.getPointAtLength(clamp(section.routePosition, 0, 1) * pathLength);
