@@ -772,38 +772,6 @@ a {
     padding-top: 1.18rem;
   }
 
-  .content-card.is-cv .cv-section::before {
-    position: absolute;
-    top: 0;
-    right: 0.35rem;
-    left: 0;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      rgba(255, 154, 46, 0),
-      rgba(255, 208, 138, 0.08) 28%,
-      rgba(255, 208, 138, 0.18) 50%,
-      rgba(255, 208, 138, 0.06) 72%,
-      rgba(255, 154, 46, 0)
-    );
-    content: "";
-  }
-
-  .content-card.is-cv .cv-section::after {
-    position: absolute;
-    top: -2px;
-    left: 50%;
-    width: 7.6rem;
-    height: 5px;
-    border-radius: 999px;
-    background:
-      radial-gradient(ellipse at center, rgba(255, 242, 205, 0.95) 0 2%, rgba(255, 154, 46, 0.72) 3% 5%, rgba(255, 154, 46, 0.18) 12%, rgba(255, 154, 46, 0.04) 28%, rgba(255, 154, 46, 0) 58%),
-      linear-gradient(90deg, rgba(255, 154, 46, 0), rgba(255, 154, 46, 0.12) 44%, rgba(255, 236, 190, 0.52) 50%, rgba(255, 154, 46, 0.1) 56%, rgba(255, 154, 46, 0));
-    filter: drop-shadow(0 0 0.08rem rgba(255, 154, 46, 0.28));
-    content: "";
-    transform: translateX(-50%);
-  }
-
   .content-card.is-cv .cv-section h2 {
     display: inline-flex;
     align-items: center;
