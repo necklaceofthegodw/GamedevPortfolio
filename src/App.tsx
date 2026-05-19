@@ -72,8 +72,14 @@ const cvEducation = [
 ];
 
 const cvExperience = [
+   {
+    date: "01.2025 - now",
+    title: "The Skyland Chronicles (UE5)",
+    detail:
+      "Skyland Chronicles is a third-person pirate roguelike with soulslike combat. My main responsibilities in the project were programming combat abilities using Unreal's Gameplay Ability System. A few examples of abilities I implemented: spawning a clone of a player which then attacks enemies, spawning a big bell which stuns enemies in front, and Gauntlet - a ranged weapon system.",
+  },
   {
-    date: "11.2024 - now",
+    date: "11.2024 - 01.2025",
     title: "Warehouse Warrior (UE5)",
     detail:
       "My own project created from scratch: a warehouse worker box-pushing puzzle game. Learned how to release a game on Steam, create achievements, and use Steam Cloud for saves.",
