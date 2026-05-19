@@ -741,7 +741,6 @@ function App() {
               transform: `translate(${motion.rider.x}px, ${motion.rider.y}px) rotate(${motion.rider.angle}deg)`,
             }}
           >
-            <ellipse className="skater-shadow" cx="0" cy="-9" rx="36" ry="7" />
             <image
               className="skater-image"
               href="/backgrounds/skateboarder.png"
@@ -916,7 +915,7 @@ function App() {
                   </a>
                 ) : null}
                 {activeSection.id === "contact" ? (
-                  <>
+                  <div className="contact-actions">
                     <a className="panel-action" href={linkedInUrl} target="_blank" rel="noreferrer">
                       <BriefcaseBusiness size={16} aria-hidden="true" />
                       LinkedIn
@@ -925,7 +924,7 @@ function App() {
                       <Mail size={16} aria-hidden="true" />
                       {contactEmail}
                     </a>
-                  </>
+                  </div>
                 ) : null}
               </div>
 

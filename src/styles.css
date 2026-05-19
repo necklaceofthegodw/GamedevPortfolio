@@ -229,10 +229,6 @@ a {
   filter: drop-shadow(0 0 0.18rem rgba(255, 154, 46, 0.14));
 }
 
-.skater-shadow {
-  fill: rgba(0, 0, 0, 0.72);
-}
-
 .skater-image {
   filter: url("#skaterGlow") drop-shadow(0 0 0.08rem rgba(255, 154, 46, 0.12));
   opacity: 0.82;
@@ -489,6 +485,17 @@ a {
   margin-top: 1rem;
   padding: 0.58rem 0.75rem;
   color: var(--orange-hot);
+}
+
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.contact-actions .panel-action {
+  margin-top: 0;
 }
 
 .panel-media {
