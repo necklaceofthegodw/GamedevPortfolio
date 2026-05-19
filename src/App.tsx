@@ -231,6 +231,7 @@ const scrollStops: ScrollStop[] = [
   { sectionId: "features", panelIndex: 0, routePosition: sectionRoutePositions.features },
   { sectionId: "features", panelIndex: 1, routePosition: 0.59 },
   { sectionId: "features", panelIndex: 2, routePosition: 0.68 },
+  { sectionId: "features", panelIndex: 3, routePosition: 0.72 },
   { sectionId: "cv", panelIndex: 0, routePosition: sectionRoutePositions.cv },
   { sectionId: "contact", panelIndex: 0, routePosition: sectionRoutePositions.contact },
 ];
@@ -339,6 +340,17 @@ const panelContent: Record<SectionId, Panel[]> = {
         kind: "video",
         src: "/features/PetsVR_FetchingBall.mp4",
         label: "Fetching Ball feature video",
+      },
+    },
+    {
+      eyebrow: "Feature reel",
+      title: "Clone Ability",
+      body: "An ability that summons a ghost clone of the player that fights alongside him, drawing enemy aggro and stunning enemies. Implemented using Unreal's Gameplay Ability System.",
+      stats: ["Gameplay Ability System", "AI aggro", "Combat"],
+      media: {
+        kind: "video",
+        src: "/features/tarot_clone.mp4",
+        label: "Clone Ability feature video",
       },
     },
   ],
