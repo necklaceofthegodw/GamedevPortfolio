@@ -226,16 +226,16 @@ a {
   transform-box: fill-box;
   transform-origin: center;
   transition: none;
-  filter: drop-shadow(0 0 0.7rem rgba(255, 154, 46, 0.38));
+  filter: drop-shadow(0 0 0.18rem rgba(255, 154, 46, 0.14));
 }
 
 .skater-shadow {
-  fill: rgba(0, 0, 0, 0.38);
+  fill: rgba(0, 0, 0, 0.72);
 }
 
 .skater-image {
-  filter: url("#skaterGlow") drop-shadow(0 0 0.28rem rgba(255, 154, 46, 0.28));
-  opacity: 0.94;
+  filter: url("#skaterGlow") drop-shadow(0 0 0.08rem rgba(255, 154, 46, 0.12));
+  opacity: 0.82;
 }
 
 .marker-object {
@@ -760,6 +760,61 @@ a {
   .content-card:not(.has-media) .content-copy {
     width: min(42rem, 100%);
     margin-inline: auto;
+  }
+
+  .content-card.is-cv .cv-section {
+    position: relative;
+    border-top: 0;
+    padding-top: 1.18rem;
+  }
+
+  .content-card.is-cv .cv-section:first-child {
+    padding-top: 1.18rem;
+  }
+
+  .content-card.is-cv .cv-section::before {
+    position: absolute;
+    top: 0;
+    right: 0.35rem;
+    left: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 154, 46, 0),
+      rgba(255, 208, 138, 0.08) 28%,
+      rgba(255, 208, 138, 0.18) 50%,
+      rgba(255, 208, 138, 0.06) 72%,
+      rgba(255, 154, 46, 0)
+    );
+    content: "";
+  }
+
+  .content-card.is-cv .cv-section::after {
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    width: 7.6rem;
+    height: 5px;
+    border-radius: 999px;
+    background:
+      radial-gradient(ellipse at center, rgba(255, 242, 205, 0.95) 0 2%, rgba(255, 154, 46, 0.72) 3% 5%, rgba(255, 154, 46, 0.18) 12%, rgba(255, 154, 46, 0.04) 28%, rgba(255, 154, 46, 0) 58%),
+      linear-gradient(90deg, rgba(255, 154, 46, 0), rgba(255, 154, 46, 0.12) 44%, rgba(255, 236, 190, 0.52) 50%, rgba(255, 154, 46, 0.1) 56%, rgba(255, 154, 46, 0));
+    filter: drop-shadow(0 0 0.08rem rgba(255, 154, 46, 0.28));
+    content: "";
+    transform: translateX(-50%);
+  }
+
+  .content-card.is-cv .cv-section h2 {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.52rem;
+  }
+
+  .content-card.is-cv .cv-section h2::before {
+    width: 1.9rem;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255, 154, 46, 0.9), rgba(255, 208, 138, 0.18));
+    content: "";
   }
 
   html,

@@ -248,7 +248,7 @@ const panelContent: Record<SectionId, Panel[]> = {
     {
       eyebrow: "About me",
       title: "Hello :)",
-      body: "My name is Zbyszek and I'm a game developer. I started my journey with professional game development in 2019. Since then, I've gained a lot of experience implementing gameplay systems and UI elements. The thing I enjoy most in programming games is that every day I learn something new. Outside of game development, skateboarding has been one of my biggest passions for years. It gives me the same kind of satisfaction as programming: learning through practice, creativity, and constantly pushing myself to improve.",
+      body: "My name is Zbyszek and I’m a game developer with professional experience since 2019. I mainly focus on gameplay systems and UI implementation, and I enjoy the constant learning and problem-solving that comes with making games. Outside of game development, skateboarding has been one of my biggest passions for years. It gives me the same kind of satisfaction as programming: learning through practice, creativity, and constantly pushing myself to improve.",
       stats: ["Gameplay systems", "UI elements", "Game developer since 2019"],
       mobileMedia: {
         kind: "image",
@@ -695,17 +695,17 @@ function App() {
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
-            <filter id="skaterGlow" x="-45%" y="-45%" width="190%" height="190%">
-              <feMorphology in="SourceAlpha" operator="dilate" radius="2" result="outline" />
-              <feFlood floodColor="#ff9a2e" floodOpacity="0.95" result="orange" />
+            <filter id="skaterGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feMorphology in="SourceAlpha" operator="dilate" radius="0.75" result="outline" />
+              <feFlood floodColor="#ff9a2e" floodOpacity="0.42" result="orange" />
               <feComposite in="orange" in2="outline" operator="in" result="orangeOutline" />
-              <feGaussianBlur in="orangeOutline" stdDeviation="3" result="softGlow" />
+              <feGaussianBlur in="orangeOutline" stdDeviation="0.9" result="softGlow" />
               <feColorMatrix
                 in="SourceGraphic"
                 result="warmFigure"
-                values="0 0 0 0 0.16
-                        0 0 0 0 0.16
-                        0 0 0 0 0.15
+                values="0 0 0 0 0.055
+                        0 0 0 0 0.055
+                        0 0 0 0 0.05
                         0 0 0 1 0"
               />
               <feMerge>
