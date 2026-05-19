@@ -248,7 +248,7 @@ const panelContent: Record<SectionId, Panel[]> = {
     {
       eyebrow: "About me",
       title: "Hello :)",
-      body: "My name is Zbyszek and I'm a game developer. I started my journey with professional game development in 2019. Since then, I've gained a lot of experience implementing gameplay systems and UI elements. The thing I enjoy most in programming games is that every day I learn something new. Outside of programming, skateboarding is my biggest passion. It helps me clear my head, stay creative, and reminds me that progress comes from patience, practice, and persistence.",
+      body: "My name is Zbyszek and I'm a game developer. I started my journey with professional game development in 2019. Since then, I've gained a lot of experience implementing gameplay systems and UI elements. The thing I enjoy most in programming games is that every day I learn something new. Outside of game development, skateboarding has been one of my biggest passions for years. It gives me the same kind of satisfaction as programming: learning through practice, creativity, and constantly pushing myself to improve.",
       stats: ["Gameplay systems", "UI elements", "Game developer since 2019"],
       mobileMedia: {
         kind: "image",
@@ -369,6 +369,10 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
+function isPhoneViewport() {
+  return window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
+}
+
 function interpolateRoute(stopProgress: number) {
   const maxIndex = scrollStops.length - 1;
   const scaled = clamp(stopProgress, 0, 1) * maxIndex;
@@ -441,7 +445,6 @@ function App() {
   const activeStop = scrollStops[motion.activeStop];
   const activeSection = sections.find((section) => section.id === activeStop.sectionId) ?? sections[0];
   const activePanel = panelContent[activeSection.id][activeStop.panelIndex] ?? panelContent[activeSection.id][0];
-  const activePanelCount = panelContent[activeSection.id].length;
   const activeWheelLabel = wheelSectionLabels[activeSection.id];
   const [displayedWheelLabel, setDisplayedWheelLabel] = useState(activeWheelLabel);
   const [isWheelLabelVisible, setIsWheelLabelVisible] = useState(true);
@@ -489,6 +492,10 @@ function App() {
 
   useEffect(() => {
     const startMusicOnInteraction = () => {
+      if (isPhoneViewport()) {
+        return;
+      }
+
       if (hasTriedMusicRef.current) {
         return;
       }
@@ -636,13 +643,6 @@ function App() {
     [scrollToProgress],
   );
 
-  const sectionProgressText = useMemo(() => {
-    if (activePanelCount === 1) {
-      return "01 / 01";
-    }
-
-    return `${String(activeStop.panelIndex + 1).padStart(2, "0")} / ${String(activePanelCount).padStart(2, "0")}`;
-  }, [activePanelCount, activeStop.panelIndex]);
   const mobileWheelProgress = clamp(motion.scrollProgress, 0, 1);
   const wheelLabelGlyphs = useMemo(() => createWheelLabelGlyphs(displayedWheelLabel), [displayedWheelLabel]);
   const wheelLabelClassName = `mobile-wheel-label ${isWheelLabelVisible ? "is-visible" : ""} ${
@@ -771,7 +771,6 @@ function App() {
                     <Icon size={15} aria-hidden="true" />
                   </span>
                   <span className="marker-copy">
-                    <strong>{section.label}</strong>
                     <small>{section.teaser}</small>
                   </span>
                 </button>
@@ -788,9 +787,6 @@ function App() {
         >
           {activeSection.id === "cv" ? (
             <div className="cv-panel">
-              <div className="content-meta">
-                <span>CV</span>
-              </div>
               <h1>Experience Timeline</h1>
               <div className="cv-scroll" tabIndex={0}>
                 <section className="cv-section">
@@ -855,12 +851,6 @@ function App() {
           ) : (
             <>
               <div className="content-copy">
-                {activePanel.media ? null : (
-                  <div className="content-meta">
-                    <span>{activePanel.eyebrow}</span>
-                    {activePanelCount === 1 ? null : <span>{sectionProgressText}</span>}
-                  </div>
-                )}
                 {activePanel.media ? null : (
                   <h1>
                     {activePanel.href ? (
