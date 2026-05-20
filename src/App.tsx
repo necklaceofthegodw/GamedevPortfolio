@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-const backgroundUrl = "/backgrounds/halfpipe-bg-04-skate-neon.png";
+const backgroundUrl = "/backgrounds/halfpipe-bg-04-skate-neon.webp";
 const musicUrl = "/OPM%20Heaven%20Is%20a%20Halfpipe.mp3";
 const wheelLabelFadeMs = 190;
 const pathD =
@@ -74,7 +74,7 @@ const cvEducation = [
 const cvExperience = [
    {
     date: "01.2025 - now",
-    title: "The Skyland Chronicles (UE5)",
+    title: "The Skyland Chronicles, MFA games, Gameplay Programmer (UE5)",
     detail:
       "Skyland Chronicles is a third-person pirate roguelike with soulslike combat. My main responsibilities in the project were programming combat abilities using Unreal's Gameplay Ability System. A few examples of abilities I implemented: spawning a clone of a player which then attacks enemies, spawning a big bell which stuns enemies in front, and Gauntlet - a ranged weapon system.",
   },
@@ -86,37 +86,37 @@ const cvExperience = [
   },
   {
     date: "08.2024 - 11.2024",
-    title: "Cosmoscouts - Moon Mystery, UI Programmer (UE5)",
+    title: "Moon Mystery, Cosmoscouts, UI Programmer (UE5)",
     detail:
       "Joined three months before release to fix UI bugs and make the interface match the design in a first-person shooter adventure game.",
   },
   {
     date: "06.2021 - 10.2023",
-    title: "WeirdFish - Oddyssey: Your Space, Your Way, UI Programmer (UE4)",
+    title: "Oddyssey: Your Space, Your Way, WeirdFish, UI Programmer (UE4)",
     detail:
       "Implemented UI elements for a single-player and co-op space exploration game focused on resources, crew needs, and saving humanity.",
   },
   {
     date: "02.2021 - 02.2024",
-    title: "Chemical Laboratory VR / 3D Geometry in VR, Trusense - Gameplay Programmer (UE4)",
+    title: "Chemical Laboratory VR / 3D Geometry VR, Trusense - Gameplay Programmer (UE4)",
     detail:
       "Built VR education simulations for chemistry and geometry lessons, including experiments and interactive 3D shape categories for schools.",
   },
   {
     date: "11.2020 - 02.2021",
-    title: "AnimalShelter VR, Actum Lab - Gameplay Programmer (UE4)",
+    title: "AnimalShelter VR, Actum Lab, Gameplay Programmer (UE4)",
     detail:
       "Implemented VR pet-care mechanics such as washing the pet, fetching a ball, and snack vending machine interactions.",
   },
   {
     date: "03.2020 - 11.2020",
-    title: "Horror Forest 3, Wenkly Studio - Gameplay Programmer (Unity)",
+    title: "Horror Forest 3, Wenkly Studio, Gameplay Programmer (Unity)",
     detail:
       "Created testing tools for game difficulty and progression speed, and fixed gameplay systems including enemy aggro, weapon upgrades, and training.",
   },
   {
     date: "08.2019 - 03.2020",
-    title: "Chernobylite, The Farm 51 - Junior Gameplay Programmer (UE4)",
+    title: "Chernobylite, The Farm 51, Junior Gameplay Programmer (UE4)",
     detail:
       "Fixed bugs, added features to existing systems, worked on dialogue creation tools, and rewrote the main menu with a new design.",
   },
@@ -168,6 +168,7 @@ type PanelMedia =
       kind: "video";
       src: string;
       label: string;
+      poster: string;
     };
 
 type Panel = {
@@ -178,6 +179,18 @@ type Panel = {
   media?: PanelMedia;
   mobileMedia?: PanelMedia;
   href?: string;
+};
+
+const startMutedVideo = (event: React.SyntheticEvent<HTMLVideoElement>) => {
+  const playAttempt = event.currentTarget.play();
+
+  if (playAttempt) {
+    void playAttempt.catch(() => undefined);
+  }
+};
+
+type WebkitFullscreenDocument = Document & {
+  webkitFullscreenElement?: Element | null;
 };
 
 const sections: Section[] = [
@@ -259,7 +272,7 @@ const panelContent: Record<SectionId, Panel[]> = {
       stats: ["Gameplay systems", "UI elements", "Game developer since 2019"],
       mobileMedia: {
         kind: "image",
-        src: "/backgrounds/halfpipe-bg-04-skate-neon.png",
+        src: "/backgrounds/halfpipe-bg-04-skate-neon.webp",
         alt: "Neon skate halfpipe artwork",
       },
     },
@@ -273,7 +286,7 @@ const panelContent: Record<SectionId, Panel[]> = {
       href: "https://store.steampowered.com/app/1016800/Chernobylite_Enhanced_Edition/",
       media: {
         kind: "image",
-        src: "/projects/chernobylite.jpg",
+        src: "/projects/chernobylite.webp",
         alt: "Chernobylite project artwork",
       },
     },
@@ -309,7 +322,7 @@ const panelContent: Record<SectionId, Panel[]> = {
       href: "https://www.nowaera.pl/wirtualne-laboratorium/czym-jest-wirtualne-laboratorium",
       media: {
         kind: "image",
-        src: "/projects/chemia.png",
+        src: "/projects/chemia.webp",
         alt: "Laboratorium Chemiczne project screenshot",
       },
     },
@@ -324,6 +337,7 @@ const panelContent: Record<SectionId, Panel[]> = {
         kind: "video",
         src: "/features/oddyssey_inventory.mp4",
         label: "Inventory system feature video",
+        poster: "/features/posters/oddyssey_inventory.webp",
       },
     },
     {
@@ -335,6 +349,7 @@ const panelContent: Record<SectionId, Panel[]> = {
         kind: "video",
         src: "/features/chemia_model_atomu.mp4",
         label: "Atom model feature video",
+        poster: "/features/posters/chemia_model_atomu.webp",
       },
     },
     {
@@ -346,6 +361,7 @@ const panelContent: Record<SectionId, Panel[]> = {
         kind: "video",
         src: "/features/PetsVR_FetchingBall.mp4",
         label: "Fetching Ball feature video",
+        poster: "/features/posters/PetsVR_FetchingBall.webp",
       },
     },
     {
@@ -357,6 +373,7 @@ const panelContent: Record<SectionId, Panel[]> = {
         kind: "video",
         src: "/features/tarot_clone.mp4",
         label: "Clone Ability feature video",
+        poster: "/features/posters/tarot_clone.webp",
       },
     },
   ],
@@ -376,7 +393,7 @@ const panelContent: Record<SectionId, Panel[]> = {
       stats: ["LinkedIn", "Email", "Portfolio"],
       mobileMedia: {
         kind: "image",
-        src: "/contact/portfolio-contact-collage-4-revised.png",
+        src: "/contact/portfolio-contact-collage-4-revised.webp",
         alt: "Gameplay feature collage",
       },
     },
@@ -451,6 +468,7 @@ function App() {
   const rafRef = useRef<number | null>(null);
   const hasTriedMusicRef = useRef(false);
   const mobileActiveStopRef = useRef(0);
+  const isVideoFullscreenRef = useRef(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [motion, setMotion] = useState<MotionState>({
     activeStop: 0,
@@ -468,6 +486,10 @@ function App() {
   const [isWheelLabelVisible, setIsWheelLabelVisible] = useState(true);
 
   const updateTargetProgress = useCallback(() => {
+    if (isVideoFullscreenRef.current) {
+      return;
+    }
+
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
     targetProgressRef.current = maxScroll <= 0 ? 0 : clamp(window.scrollY / maxScroll, 0, 1);
   }, []);
@@ -538,6 +560,42 @@ function App() {
   }, [playMusic]);
 
   useEffect(() => {
+    const updateVideoFullscreenState = () => {
+      const fullscreenElement =
+        document.fullscreenElement ?? (document as WebkitFullscreenDocument).webkitFullscreenElement;
+
+      isVideoFullscreenRef.current = fullscreenElement instanceof HTMLVideoElement;
+
+      if (!isVideoFullscreenRef.current) {
+        window.requestAnimationFrame(updateTargetProgress);
+      }
+    };
+
+    const handleWebkitVideoFullscreenStart = (event: Event) => {
+      if (event.target instanceof HTMLVideoElement) {
+        isVideoFullscreenRef.current = true;
+      }
+    };
+
+    const handleWebkitVideoFullscreenEnd = () => {
+      isVideoFullscreenRef.current = false;
+      window.requestAnimationFrame(updateTargetProgress);
+    };
+
+    document.addEventListener("fullscreenchange", updateVideoFullscreenState);
+    document.addEventListener("webkitfullscreenchange", updateVideoFullscreenState);
+    document.addEventListener("webkitbeginfullscreen", handleWebkitVideoFullscreenStart, true);
+    document.addEventListener("webkitendfullscreen", handleWebkitVideoFullscreenEnd, true);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", updateVideoFullscreenState);
+      document.removeEventListener("webkitfullscreenchange", updateVideoFullscreenState);
+      document.removeEventListener("webkitbeginfullscreen", handleWebkitVideoFullscreenStart, true);
+      document.removeEventListener("webkitendfullscreen", handleWebkitVideoFullscreenEnd, true);
+    };
+  }, [updateTargetProgress]);
+
+  useEffect(() => {
     if (displayedWheelLabel === activeWheelLabel) {
       setIsWheelLabelVisible(true);
       return;
@@ -559,6 +617,11 @@ function App() {
     window.addEventListener("resize", updateTargetProgress);
 
     const tick = () => {
+      if (isVideoFullscreenRef.current) {
+        rafRef.current = window.requestAnimationFrame(tick);
+        return;
+      }
+
       const path = pathRef.current;
       const target = targetProgressRef.current;
       const current = renderedProgressRef.current;
@@ -934,19 +997,22 @@ function App() {
                   {activePanel.media.kind === "image" ? (
                     activePanel.href ? (
                       <a href={activePanel.href} target="_blank" rel="noreferrer" aria-label={`Open ${activePanel.title}`}>
-                        <img src={activePanel.media.src} alt={activePanel.media.alt} />
+                        <img src={activePanel.media.src} alt={activePanel.media.alt} loading="lazy" decoding="async" />
                       </a>
                     ) : (
-                      <img src={activePanel.media.src} alt={activePanel.media.alt} />
+                      <img src={activePanel.media.src} alt={activePanel.media.alt} loading="lazy" decoding="async" />
                     )
                   ) : (
                     <video
                       aria-label={activePanel.media.label}
+                      autoPlay
                       controls
                       loop
                       muted
+                      onCanPlay={startMutedVideo}
                       playsInline
-                      preload="metadata"
+                      poster={activePanel.media.poster}
+                      preload="auto"
                       src={activePanel.media.src}
                     />
                   )}
@@ -972,7 +1038,13 @@ function App() {
             aria-hidden="true"
           >
             <div className="mobile-wheel-rotor">
-              <img className="mobile-wheel-image" src="/backgrounds/skate_wheel_scroll.png" alt="" draggable="false" />
+              <img
+                className="mobile-wheel-image"
+                src="/backgrounds/skate_wheel_scroll.webp"
+                alt=""
+                draggable="false"
+                decoding="async"
+              />
               <svg className={wheelLabelClassName} viewBox="0 0 100 100" focusable="false">
                 {wheelLabelGlyphs.map((glyph) => (
                   <text
@@ -994,6 +1066,7 @@ function App() {
               const mobileSection = sections.find((section) => section.id === stop.sectionId) ?? sections[0];
               const mobilePanel = panelContent[mobileSection.id][stop.panelIndex] ?? panelContent[mobileSection.id][0];
               const mobilePanelMedia = mobilePanel.media ?? mobilePanel.mobileMedia;
+              const isActiveMobilePanel = stopIndex === motion.activeStop;
 
               return (
                 <section
@@ -1010,20 +1083,30 @@ function App() {
                               {mobilePanelMedia.kind === "image" ? (
                                 mobilePanel.href ? (
                                   <a href={mobilePanel.href} target="_blank" rel="noreferrer" aria-label={`Open ${mobilePanel.title}`}>
-                                    <img src={mobilePanelMedia.src} alt={mobilePanelMedia.alt} />
+                                    <img src={mobilePanelMedia.src} alt={mobilePanelMedia.alt} loading="lazy" decoding="async" />
                                   </a>
                                 ) : (
-                                  <img src={mobilePanelMedia.src} alt={mobilePanelMedia.alt} />
+                                  <img src={mobilePanelMedia.src} alt={mobilePanelMedia.alt} loading="lazy" decoding="async" />
                                 )
-                              ) : (
+                              ) : isActiveMobilePanel ? (
                                 <video
                                   aria-label={mobilePanelMedia.label}
+                                  autoPlay
                                   controls
                                   loop
                                   muted
+                                  onCanPlay={startMutedVideo}
                                   playsInline
-                                  preload="metadata"
+                                  poster={mobilePanelMedia.poster}
+                                  preload="auto"
                                   src={mobilePanelMedia.src}
+                                />
+                              ) : (
+                                <img
+                                  src={mobilePanelMedia.poster}
+                                  alt={mobilePanelMedia.label}
+                                  loading="lazy"
+                                  decoding="async"
                                 />
                               )}
                             </div>

@@ -533,6 +533,7 @@ a {
   line-height: 1;
   text-transform: uppercase;
   backdrop-filter: blur(8px);
+  pointer-events: none;
 }
 
 .panel-media a,
@@ -550,6 +551,27 @@ a {
 .panel-media img,
 .panel-media video {
   object-fit: cover;
+}
+
+.panel-media video:fullscreen,
+.mobile-media-block video:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  object-fit: contain;
+  background: #000;
+}
+
+.panel-media video:-webkit-full-screen,
+.mobile-media-block video:-webkit-full-screen {
+  width: 100vw;
+  height: 100vh;
+  object-fit: contain;
+  background: #000;
+}
+
+.panel-media video::backdrop,
+.mobile-media-block video::backdrop {
+  background: #000;
 }
 
 .content-card.is-cv {
@@ -1045,7 +1067,7 @@ a {
   .mobile-section-about .mobile-content-container.is-text-only .mobile-content-top {
     background:
       linear-gradient(180deg, rgba(4, 7, 8, 0.18), rgba(4, 7, 8, 0.74)),
-      url("/about/project-triptych.png");
+      url("/about/project-triptych.webp");
     background-position: center;
     background-size: cover;
   }
@@ -1053,7 +1075,7 @@ a {
   .mobile-section-contact .mobile-content-container.is-text-only .mobile-content-top {
     background:
       linear-gradient(180deg, rgba(4, 7, 8, 0.14), rgba(4, 7, 8, 0.76)),
-      url("/about/feature-triptych-bg.png");
+      url("/about/feature-triptych-bg.webp");
     background-position: center;
     background-size: cover;
   }
@@ -1088,6 +1110,7 @@ a {
     letter-spacing: 0.08em;
     line-height: 1.05;
     overflow-wrap: break-word;
+    pointer-events: none;
     text-transform: uppercase;
   }
 
