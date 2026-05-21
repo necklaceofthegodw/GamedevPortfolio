@@ -167,7 +167,7 @@ a {
   right: clamp(4rem, 9vw, 9rem);
   display: grid;
   gap: 0.15rem;
-  width: 8.4rem;
+  width: 5.8rem;
   transform: rotate(-8deg);
   color: rgba(255, 248, 233, 0.86);
   font-size: clamp(0.78rem, 1.1vw, 0.96rem);
@@ -181,7 +181,7 @@ a {
 
 .billboard-copy::before {
   position: absolute;
-  inset: -0.7rem -0.55rem;
+  inset: -0.58rem -0.46rem;
   z-index: -1;
   border: 1px solid rgba(255, 248, 233, 0.28);
   border-radius: 0.2rem;
@@ -427,6 +427,12 @@ a {
   max-width: 42rem;
   font-size: clamp(0.96rem, 1.18vw, 1.08rem);
   line-height: 1.5;
+}
+
+.content-body strong,
+.mobile-content-body strong {
+  color: rgba(255, 248, 233, 0.96);
+  font-weight: 900;
 }
 
 .content-card.has-media p {

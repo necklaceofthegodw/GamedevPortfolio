@@ -175,10 +175,26 @@ type Panel = {
   eyebrow: string;
   title: string;
   body?: string;
+  bodyHighlights?: string[];
   stats: string[];
   media?: PanelMedia;
   mobileMedia?: PanelMedia;
   href?: string;
+};
+
+const renderHighlightedText = (text: string, highlights: string[] = []) => {
+  if (highlights.length === 0) {
+    return text;
+  }
+
+  const escapedHighlights = highlights.map((highlight) =>
+    highlight.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+  );
+  const highlightPattern = new RegExp(`(${escapedHighlights.join("|")})`, "g");
+
+  return text.split(highlightPattern).map((part, index) =>
+    highlights.includes(part) ? <strong key={`${part}-${index}`}>{part}</strong> : part,
+  );
 };
 
 const startMutedVideo = (event: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -269,7 +285,8 @@ const panelContent: Record<SectionId, Panel[]> = {
       eyebrow: "About me",
       title: "Hello :)",
       body: "My name is Zbyszek and I’m a game developer with professional experience since 2019. I mainly focus on gameplay systems and UI implementation, and I enjoy the constant learning and problem-solving that comes with making games. Outside of game development, skateboarding has been one of my biggest passions for years. It gives me the same kind of satisfaction as programming: learning through practice, creativity, and constantly pushing myself to improve.",
-      stats: ["Gameplay systems", "UI elements", "Game developer since 2019"],
+      bodyHighlights: ["gameplay systems", "UI"],
+      stats: [],
       mobileMedia: {
         kind: "image",
         src: "/backgrounds/halfpipe-bg-04-skate-neon.webp",
@@ -389,7 +406,7 @@ const panelContent: Record<SectionId, Panel[]> = {
     {
       eyebrow: "Contact",
       title: "Let’s build something together.",
-      body: "Reach out for polished gameplay code, UI implementation, tools, prototypes, or thoughtful game-feel work.",
+      body: "Reach out for gameplay programming, UI work, tools, or prototype development.",
       stats: ["LinkedIn", "Email", "Portfolio"],
       mobileMedia: {
         kind: "image",
@@ -757,9 +774,9 @@ function App() {
         </header>
 
         <div className="billboard-copy" aria-hidden="true">
-          <span>Building</span>
-          <span>Playable</span>
-          <span>Experiences</span>
+          <span>Code</span>
+          <span>Skate</span>
+          <span>Repeat</span>
         </div>
 
         <svg className="route-svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
@@ -958,7 +975,7 @@ function App() {
                 {activePanel.body ? (
                   <div className="content-body">
                     {activePanel.body.split("\n\n").map((paragraph) => (
-                      <p key={paragraph}>{paragraph}</p>
+                      <p key={paragraph}>{renderHighlightedText(paragraph, activePanel.bodyHighlights)}</p>
                     ))}
                   </div>
                 ) : null}
@@ -1198,7 +1215,7 @@ function App() {
                               <div className="mobile-content-body">
                                 <span className="mobile-wheel-text-wrap" aria-hidden="true" />
                                 {mobilePanel.body.split("\n\n").map((paragraph) => (
-                                  <p key={paragraph}>{paragraph}</p>
+                                  <p key={paragraph}>{renderHighlightedText(paragraph, mobilePanel.bodyHighlights)}</p>
                                 ))}
                               </div>
                             ) : null}
@@ -1217,7 +1234,7 @@ function App() {
                               <div className="mobile-content-body">
                                 <span className="mobile-wheel-text-wrap" aria-hidden="true" />
                                 {mobilePanel.body.split("\n\n").map((paragraph) => (
-                                  <p key={paragraph}>{paragraph}</p>
+                                  <p key={paragraph}>{renderHighlightedText(paragraph, mobilePanel.bodyHighlights)}</p>
                                 ))}
                               </div>
                             ) : null}
