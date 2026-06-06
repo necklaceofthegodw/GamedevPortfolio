@@ -5,7 +5,10 @@ import {
   FileText,
   Gamepad2,
   Mail,
+  Maximize2,
+  Minimize2,
   Mouse,
+  Play,
   Volume2,
   VolumeX,
   UserRound,
@@ -223,16 +226,16 @@ const sections: Section[] = [
     id: "projects",
     nav: "Projects",
     label: "Projects",
-    teaser: "Games I've worked on",
+    teaser: "Projects",
     icon: BriefcaseBusiness,
     routePosition: sectionRoutePositions.projects,
-    labelSide: "right",
+    labelSide: "left",
   },
   {
     id: "features",
     nav: "Features",
     label: "Features",
-    teaser: "Systems and mechanics",
+    teaser: "Features",
     icon: Code2,
     routePosition: sectionRoutePositions.features,
     labelSide: "above",
@@ -260,6 +263,14 @@ const sections: Section[] = [
 const scrollStops: ScrollStop[] = [
   { sectionId: "about", panelIndex: 0, routePosition: sectionRoutePositions.about },
   { sectionId: "projects", panelIndex: 0, routePosition: sectionRoutePositions.projects },
+  { sectionId: "features", panelIndex: 0, routePosition: sectionRoutePositions.features },
+  { sectionId: "cv", panelIndex: 0, routePosition: sectionRoutePositions.cv },
+  { sectionId: "contact", panelIndex: 0, routePosition: sectionRoutePositions.contact },
+];
+
+const mobileScrollStops: ScrollStop[] = [
+  { sectionId: "about", panelIndex: 0, routePosition: sectionRoutePositions.about },
+  { sectionId: "projects", panelIndex: 0, routePosition: sectionRoutePositions.projects },
   { sectionId: "projects", panelIndex: 1, routePosition: 0.31 },
   { sectionId: "projects", panelIndex: 2, routePosition: 0.37 },
   { sectionId: "projects", panelIndex: 3, routePosition: 0.43 },
@@ -274,6 +285,14 @@ const scrollStops: ScrollStop[] = [
 const sectionStartStops = sections.reduce(
   (map, section) => {
     map[section.id] = scrollStops.findIndex((stop) => stop.sectionId === section.id);
+    return map;
+  },
+  {} as Record<SectionId, number>,
+);
+
+const mobileSectionStartStops = sections.reduce(
+  (map, section) => {
+    map[section.id] = mobileScrollStops.findIndex((stop) => stop.sectionId === section.id);
     return map;
   },
   {} as Record<SectionId, number>,
@@ -425,16 +444,20 @@ function isPhoneViewport() {
   return window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
 }
 
-function interpolateRoute(stopProgress: number) {
-  const maxIndex = scrollStops.length - 1;
+function isMobileShowcaseViewport() {
+  return window.matchMedia("(max-width: 640px)").matches;
+}
+
+function interpolateRoute(stopProgress: number, stops: ScrollStop[] = scrollStops) {
+  const maxIndex = stops.length - 1;
   const scaled = clamp(stopProgress, 0, 1) * maxIndex;
   const left = Math.floor(scaled);
   const right = Math.min(left + 1, maxIndex);
   const local = scaled - left;
 
   return (
-    scrollStops[left].routePosition +
-    (scrollStops[right].routePosition - scrollStops[left].routePosition) * local
+    stops[left].routePosition +
+    (stops[right].routePosition - stops[left].routePosition) * local
   );
 }
 
@@ -487,6 +510,9 @@ function App() {
   const mobileActiveStopRef = useRef(0);
   const isVideoFullscreenRef = useRef(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [activeGridVideo, setActiveGridVideo] = useState<string | null>(null);
+  const [expandedGridFeature, setExpandedGridFeature] = useState<string | null>(null);
+  const [isMobileLayout, setIsMobileLayout] = useState(() => isMobileShowcaseViewport());
   const [motion, setMotion] = useState<MotionState>({
     activeStop: 0,
     scrollProgress: 0,
@@ -495,9 +521,11 @@ function App() {
     markers: sections.map(() => ({ x: 0, y: 0 })),
   });
 
-  const activeStop = scrollStops[motion.activeStop];
+  const activeStops = isMobileLayout ? mobileScrollStops : scrollStops;
+  const activeStop = activeStops[motion.activeStop] ?? activeStops[0];
   const activeSection = sections.find((section) => section.id === activeStop.sectionId) ?? sections[0];
   const activePanel = panelContent[activeSection.id][activeStop.panelIndex] ?? panelContent[activeSection.id][0];
+  const isGridSection = activeSection.id === "projects" || activeSection.id === "features";
   const activeWheelLabel = wheelSectionLabels[activeSection.id];
   const [displayedWheelLabel, setDisplayedWheelLabel] = useState(activeWheelLabel);
   const [isWheelLabelVisible, setIsWheelLabelVisible] = useState(true);
@@ -546,6 +574,19 @@ function App() {
       void playMusic();
     }
   }, [isMusicPlaying, pauseMusic, playMusic]);
+
+  useEffect(() => {
+    const updateLayoutMode = () => setIsMobileLayout(isMobileShowcaseViewport());
+
+    updateLayoutMode();
+    window.addEventListener("resize", updateLayoutMode);
+    window.addEventListener("orientationchange", updateLayoutMode);
+
+    return () => {
+      window.removeEventListener("resize", updateLayoutMode);
+      window.removeEventListener("orientationchange", updateLayoutMode);
+    };
+  }, []);
 
   useEffect(() => {
     const startMusicOnInteraction = () => {
@@ -629,6 +670,15 @@ function App() {
   }, [activeWheelLabel, displayedWheelLabel]);
 
   useEffect(() => {
+    if (activeSection.id !== "features" && expandedGridFeature) {
+      setExpandedGridFeature(null);
+    }
+    if (activeSection.id !== "features" && activeGridVideo?.startsWith("features-")) {
+      setActiveGridVideo(null);
+    }
+  }, [activeGridVideo, activeSection.id, expandedGridFeature]);
+
+  useEffect(() => {
     updateTargetProgress();
     window.addEventListener("scroll", updateTargetProgress, { passive: true });
     window.addEventListener("resize", updateTargetProgress);
@@ -647,8 +697,12 @@ function App() {
       renderedProgressRef.current = next;
 
       if (window.innerWidth <= 640) {
-        const activeStopIndex = clamp(Math.round(next * (scrollStops.length - 1)), 0, scrollStops.length - 1);
-        const routeProgress = interpolateRoute(next);
+        const activeStopIndex = clamp(
+          Math.round(next * (mobileScrollStops.length - 1)),
+          0,
+          mobileScrollStops.length - 1,
+        );
+        const routeProgress = interpolateRoute(next, mobileScrollStops);
 
         if (activeStopIndex !== mobileActiveStopRef.current) {
           mobileActiveStopRef.current = activeStopIndex;
@@ -677,7 +731,7 @@ function App() {
 
       if (path) {
         const pathLength = path.getTotalLength();
-        const routeProgress = interpolateRoute(next);
+        const routeProgress = interpolateRoute(next, scrollStops);
         const distance = clamp(routeProgress, 0, 1) * pathLength;
         const point = path.getPointAtLength(distance);
         const tangentSample = 8;
@@ -734,8 +788,8 @@ function App() {
   }, []);
 
   const scrollToStop = useCallback(
-    (stopIndex: number, behavior: ScrollBehavior = "smooth") => {
-      const progress = clamp(stopIndex / (scrollStops.length - 1), 0, 1);
+    (stopIndex: number, behavior: ScrollBehavior = "smooth", stopCount = scrollStops.length) => {
+      const progress = clamp(stopIndex / (stopCount - 1), 0, 1);
       scrollToProgress(progress, behavior);
     },
     [scrollToProgress],
@@ -750,7 +804,7 @@ function App() {
   return (
     <main
       className="portfolio-scroll"
-      style={{ "--scroll-stops": scrollStops.length } as React.CSSProperties}
+      style={{ "--scroll-stops": activeStops.length } as React.CSSProperties}
     >
       <audio ref={audioRef} src={musicUrl} loop preload="auto" />
       <section className="rider-stage" aria-label="Scroll-driven halfpipe portfolio">
@@ -890,10 +944,10 @@ function App() {
         </svg>
 
         <article
-          className={`content-card ${activePanel.media ? "has-media" : ""} ${
+          className={`content-card ${!isGridSection && activePanel.media ? "has-media" : ""} ${
             activePanel.body ? "" : "is-title-only"
-          } ${activeSection.id === "cv" ? "is-cv" : ""}`}
-          key={`${activeSection.id}-${activeStop.panelIndex}`}
+          } ${activeSection.id === "cv" ? "is-cv" : ""} ${isGridSection ? "is-grid-section" : ""}`}
+          key={isGridSection ? activeSection.id : `${activeSection.id}-${activeStop.panelIndex}`}
         >
           {activeSection.id === "cv" ? (
             <div className="cv-panel">
@@ -956,6 +1010,123 @@ function App() {
                     </ul>
                   </div>
                 </section>
+              </div>
+            </div>
+          ) : isGridSection ? (
+            <div className="section-grid-panel">
+              <header className="section-grid-heading">
+                <h1>{activeSection.label}</h1>
+              </header>
+
+              <div className="portfolio-grid" aria-label={`${activeSection.label} grid`}>
+                {panelContent[activeSection.id].map((panel) => {
+                  const panelMedia = panel.media;
+                  const mediaSrc =
+                    panelMedia?.kind === "image" ? panelMedia.src : panelMedia?.poster;
+                  const mediaAlt =
+                    panelMedia?.kind === "image" ? panelMedia.alt : panelMedia?.label ?? panel.title;
+                  const actionHref = panel.href;
+                  const videoKey = `${activeSection.id}-${panel.title}`;
+                  const isInlineVideoActive = panelMedia?.kind === "video" && activeGridVideo === videoKey;
+                  const isFeatureCard = activeSection.id === "features" && panelMedia?.kind === "video";
+                  const isExpandedFeature = isFeatureCard && expandedGridFeature === videoKey;
+                  const hasExpandedFeature = activeSection.id === "features" && expandedGridFeature !== null;
+                  const gridCardClassName = [
+                    "grid-card",
+                    `grid-card-${activeSection.id}`,
+                    isExpandedFeature ? "is-expanded-feature" : "",
+                    hasExpandedFeature && !isExpandedFeature ? "is-hidden-by-expanded-feature" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ");
+
+                  return (
+                    <article className={gridCardClassName} key={`${activeSection.id}-${panel.title}`}>
+                      <div className="grid-card-main">
+                        {mediaSrc ? (
+                          actionHref ? (
+                            <a
+                              className="grid-card-media is-link"
+                              href={actionHref}
+                              target="_blank"
+                              rel="noreferrer"
+                              aria-label={`Open ${panel.title}`}
+                            >
+                              <img src={mediaSrc} alt={mediaAlt} loading="lazy" decoding="async" />
+                              <span className="grid-card-title">{panel.title}</span>
+                            </a>
+                          ) : (
+                            <span className="grid-card-media">
+                              {isInlineVideoActive && panelMedia?.kind === "video" ? (
+                                <video
+                                  aria-label={panelMedia.label}
+                                  autoPlay
+                                  controls
+                                  loop
+                                  muted
+                                  onCanPlay={startMutedVideo}
+                                  playsInline
+                                  poster={panelMedia.poster}
+                                  preload="auto"
+                                  src={panelMedia.src}
+                                />
+                              ) : (
+                                <img src={mediaSrc} alt={mediaAlt} loading="lazy" decoding="async" />
+                              )}
+                              <span className="grid-card-title">{panel.title}</span>
+                              {isFeatureCard ? (
+                                <button
+                                  className="grid-expand-button"
+                                  type="button"
+                                  onClick={() => {
+                                    if (isExpandedFeature) {
+                                      setExpandedGridFeature(null);
+                                      setActiveGridVideo((currentVideo) =>
+                                        currentVideo === videoKey ? null : currentVideo,
+                                      );
+                                    } else {
+                                      setExpandedGridFeature(videoKey);
+                                      setActiveGridVideo(videoKey);
+                                    }
+                                  }}
+                                  aria-label={`${isExpandedFeature ? "Collapse" : "Expand"} ${panel.title}`}
+                                >
+                                  {isExpandedFeature ? (
+                                    <Minimize2 size={16} aria-hidden="true" />
+                                  ) : (
+                                    <Maximize2 size={16} aria-hidden="true" />
+                                  )}
+                                </button>
+                              ) : null}
+                              {panelMedia?.kind === "video" && !isInlineVideoActive ? (
+                                <button
+                                  className="grid-play-button"
+                                  type="button"
+                                  onClick={() => setActiveGridVideo(videoKey)}
+                                  aria-label={`Play ${panel.title}`}
+                                >
+                                  <Play size={18} fill="currentColor" aria-hidden="true" />
+                                </button>
+                              ) : null}
+                            </span>
+                          )
+                        ) : null}
+
+                        {!actionHref ? (
+                          <span className="grid-card-content">
+                            {panel.body ? <span className="grid-card-body">{panel.body}</span> : null}
+                          </span>
+                        ) : null}
+                      </div>
+
+                      {panel.body && actionHref ? (
+                        <div className="grid-card-overlay" aria-hidden="true">
+                          <p>{panel.body}</p>
+                        </div>
+                      ) : null}
+                    </article>
+                  );
+                })}
               </div>
             </div>
           ) : (
@@ -1045,7 +1216,7 @@ function App() {
           style={
             {
               "--mobile-stop-index": motion.activeStop,
-              "--mobile-stop-count": scrollStops.length,
+              "--mobile-stop-count": mobileScrollStops.length,
               "--mobile-wheel-rotation": `${mobileWheelProgress * 1440}deg`,
             } as React.CSSProperties
           }
@@ -1079,7 +1250,7 @@ function App() {
           </div>
 
           <div className="mobile-showcase-stack">
-            {scrollStops.map((stop, stopIndex) => {
+            {mobileScrollStops.map((stop, stopIndex) => {
               const mobileSection = sections.find((section) => section.id === stop.sectionId) ?? sections[0];
               const mobilePanel = panelContent[mobileSection.id][stop.panelIndex] ?? panelContent[mobileSection.id][0];
               const mobilePanelMedia = mobilePanel.media ?? mobilePanel.mobileMedia;
@@ -1279,7 +1450,13 @@ function App() {
                   className={section.id === activeSection.id ? "is-active" : ""}
                   key={section.id}
                   type="button"
-                  onClick={() => scrollToStop(sectionStartStops[section.id])}
+                  onClick={() =>
+                    scrollToStop(
+                      mobileSectionStartStops[section.id],
+                      "smooth",
+                      mobileScrollStops.length,
+                    )
+                  }
                   aria-label={section.label}
                 >
                   <Icon size={18} aria-hidden="true" />
