@@ -7,7 +7,6 @@ import {
   Mail,
   Maximize2,
   Minimize2,
-  Mouse,
   Play,
   Volume2,
   VolumeX,
@@ -1468,7 +1467,7 @@ function App() {
         </section>
 
         <div className="scroll-hint" aria-hidden="true">
-          <Mouse size={18} />
+          <span className="scroll-hint-icon" />
           <span>Scroll to ride</span>
         </div>
 

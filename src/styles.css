@@ -911,6 +911,8 @@ a {
 }
 
 .content-card.is-cv {
+  top: 47%;
+  height: clamp(31.68rem, 61.92vh, 36rem);
   padding-right: clamp(0.72rem, 1.35vw, 1rem);
 }
 
@@ -1055,8 +1057,31 @@ a {
   text-transform: uppercase;
 }
 
-.scroll-hint svg {
-  color: var(--text);
+.scroll-hint-icon {
+  position: relative;
+  display: block;
+  width: 1.065rem;
+  height: 1.8375rem;
+  border: 0.105rem solid #fff1c9;
+  border-radius: 999px;
+  box-shadow:
+    0 0 0.28rem rgba(255, 248, 230, 0.95),
+    0 0 0.7rem rgba(255, 154, 46, 0.72);
+}
+
+.scroll-hint-icon::after {
+  content: "";
+  position: absolute;
+  top: 0.315rem;
+  left: 50%;
+  width: 0.1125rem;
+  height: 0.36rem;
+  border-radius: 999px;
+  background: #ff9a2e;
+  box-shadow:
+    0 0 0.22rem rgba(255, 154, 46, 0.95),
+    0 0 0.48rem rgba(255, 154, 46, 0.75);
+  transform: translateX(-50%);
 }
 
 .social-links {
